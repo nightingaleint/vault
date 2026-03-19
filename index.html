@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Nightingale Vault · Private Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Share+Tech+Mono&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --void:#020305;
+  --obsidian:#060810;
+  --steel:#0c1018;
+  --steel2:#111620;
+  --steel3:#181e2a;
+  --border:#1e2535;
+  --border2:#2a3548;
+  --gold:#b8960c;
+  --gold2:#d4af37;
+  --gold3:#f0d060;
+  --cold:#4a90b8;
+  --cold2:#6ab4d8;
+  --btc:#f7931a;
+  --btc2:#ffb347;
+  --danger:#c0392b;
+  --safe:#27ae60;
+  --text:#c8d4e0;
+  --muted:#4a5568;
+  --bright:#e8f0f8;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--void);
+  color:var(--text);
+  font-family:'Share Tech Mono',monospace;
+  min-height:100vh;
+  overflow-x:hidden;
+  cursor:default;
+}
+
+/* ── VAULT DOOR INTRO ANIMATION ── */
+#vault-intro{
+  position:fixed;inset:0;z-index:9999;
+  background:var(--void);
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:24px;
+  animation:introFade 0.5s ease 3.2s forwards;
+}
+@keyframes introFade{to{opacity:0;pointer-events:none;visibility:hidden}}
+
+.vault-door-svg{
+  animation:doorOpen 1.2s cubic-bezier(.4,0,.2,1) 1.8s forwards;
+}
+@keyframes doorOpen{
+  0%{transform:perspective(600px) rotateY(0deg)}
+  100%{transform:perspective(600px) rotateY(-88deg)}
+}
+.vault-code{
+  font-size:.7rem;letter-spacing:.3em;color:var(--gold);
+  animation:codeType 1.6s steps(20,end) 0.2s both;
+  overflow:hidden;white-space:nowrap;width:0;
+}
+@keyframes codeType{to{width:320px}}
+.vault-auth{
+  font-size:.65rem;color:var(--muted);letter-spacing:.2em;
+  animation:fadeIn .4s ease 1.6s both;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ── SCAN LINE ── */
+body::after{
+  content:'';position:fixed;inset:0;z-index:50;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.06) 3px,rgba(0,0,0,.06) 4px);
+  pointer-events:none;
+}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(6,8,16,.96);
+  border-bottom:1px solid var(--border2);
+  backdrop-filter:blur(20px);
+  height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;
+}
+.nav-brand{
+  display:flex;align-items:center;gap:12px;
+}
+.nav-vault-icon{
+  width:32px;height:32px;
+  border:1.5px solid var(--gold);
+  border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;
+  position:relative;
+}
+.nav-vault-icon::before{
+  content:'';position:absolute;inset:-4px;
+  border:1px solid rgba(184,150,12,.2);
+  border-radius:6px;
+  animation:lockPulse 3s ease infinite;
+}
+@keyframes lockPulse{0%,100%{opacity:0;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
+.brand-name{
+  font-family:'Cinzel',serif;
+  font-size:.95rem;font-weight:700;
+  color:var(--bright);letter-spacing:.12em;
+}
+.brand-name span{color:var(--gold2)}
+.nav-status{display:flex;align-items:center;gap:20px}
+.status-chip{
+  display:flex;align-items:center;gap:6px;
+  font-size:.58rem;letter-spacing:.15em;color:var(--muted);
+}
+.sdot{width:5px;height:5px;border-radius:50%}
+.sdot-gold{background:var(--gold2);box-shadow:0 0 6px var(--gold2);animation:blink 2s ease infinite}
+.sdot-cold{background:var(--cold)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.nav-modules{display:flex;gap:4px}
+.nmod{
+  padding:6px 14px;font-size:.58rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);
+  border:1px solid transparent;border-radius:3px;
+  cursor:pointer;transition:all .2s;background:none;font-family:inherit;
+}
+.nmod:hover,.nmod.active{
+  border-color:var(--border2);color:var(--gold2);
+  background:rgba(184,150,12,.06);
+}
+.nav-clock{font-size:.6rem;color:var(--cold);letter-spacing:.1em}
+
+/* ── LAYOUT ── */
+#app{
+  padding-top:56px;
+  display:grid;
+  grid-template-columns:240px 1fr;
+  min-height:100vh;
+}
+
+/* ── SIDEBAR ── */
+#sidebar{
+  background:var(--obsidian);
+  border-right:1px solid var(--border);
+  padding:24px 0;
+  position:sticky;top:56px;height:calc(100vh - 56px);
+  overflow-y:auto;
+}
+.sb-section{padding:0 16px;margin-bottom:8px}
+.sb-section-label{
+  font-size:.5rem;letter-spacing:.25em;text-transform:uppercase;
+  color:var(--muted);padding:8px 8px;margin-bottom:4px;
+  border-bottom:1px solid var(--border);
+}
+.sb-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 10px;border-radius:4px;margin-bottom:2px;
+  cursor:pointer;transition:all .15s;
+  font-size:.68rem;letter-spacing:.06em;color:var(--muted);
+  border:1px solid transparent;
+}
+.sb-item:hover{color:var(--text);background:rgba(255,255,255,.03);border-color:var(--border)}
+.sb-item.active{color:var(--gold2);background:rgba(184,150,12,.06);border-color:rgba(184,150,12,.2)}
+.sb-icon{font-size:1rem;width:20px;text-align:center}
+.sb-badge{
+  margin-left:auto;font-size:.5rem;padding:1px 6px;
+  border-radius:10px;background:rgba(184,150,12,.15);
+  color:var(--gold2);border:1px solid rgba(184,150,12,.2);
+}
+
+.vault-meter{
+  margin:16px;padding:14px;
+  background:var(--steel);border:1px solid var(--border);
+  border-radius:6px;
+}
+.vm-label{font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.vm-val{font-family:'Cinzel',serif;font-size:1.4rem;color:var(--gold2);margin-bottom:6px}
+.vm-bar-bg{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.vm-bar{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--gold),var(--gold3))}
+
+/* ── MAIN ── */
+#main{background:var(--void);overflow-y:auto}
+.view{display:none;padding:28px}
+.view.active{display:block}
+
+/* ── PAGE HEADER ── */
+.page-header{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  margin-bottom:28px;padding-bottom:20px;
+  border-bottom:1px solid var(--border);
+}
+.ph-eyebrow{
+  font-size:.55rem;letter-spacing:.25em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:8px;
+  display:flex;align-items:center;gap:8px;
+}
+.ph-eyebrow::before{content:'▸';color:var(--gold)}
+.ph-title{
+  font-family:'Cinzel',serif;
+  font-size:1.6rem;font-weight:700;color:var(--bright);
+  letter-spacing:.06em;line-height:1.2;
+}
+.ph-sub{font-size:.68rem;color:var(--muted);margin-top:6px;letter-spacing:.05em}
+.ph-meta{text-align:right;font-size:.58rem;color:var(--muted);line-height:2}
+
+/* ── CARDS ── */
+.card{
+  background:var(--steel);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:20px;
+  position:relative;overflow:hidden;
+}
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  opacity:.4;
+}
+.card-title{
+  font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:14px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-badge{
+  font-size:.52rem;padding:2px 8px;border-radius:2px;
+  background:rgba(74,144,184,.1);border:1px solid rgba(74,144,184,.2);
+  color:var(--cold2);
+}
+
+/* ── STAT ROW ── */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.stat-card{
+  background:var(--steel2);border:1px solid var(--border);
+  border-radius:6px;padding:16px;
+  position:relative;
+}
+.stat-card::after{
+  content:'';position:absolute;top:0;left:0;width:3px;height:100%;
+  border-radius:3px 0 0 3px;
+}
+.sc-gold::after{background:var(--gold)}
+.sc-btc::after{background:var(--btc)}
+.sc-cold::after{background:var(--cold)}
+.sc-safe::after{background:var(--safe)}
+.stat-label{font-size:.52rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.stat-val{font-family:'Cinzel',serif;font-size:1.5rem;color:var(--bright);line-height:1}
+.stat-delta{font-size:.6rem;margin-top:4px}
+.delta-up{color:var(--safe)}
+.delta-dn{color:var(--danger)}
+.delta-neu{color:var(--muted)}
+
+/* ── GRID LAYOUTS ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px}
+.grid-2-1{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}
+.grid-1-2{display:grid;grid-template-columns:1fr 2fr;gap:16px;margin-bottom:16px}
+
+/* ── CHART ── */
+.chart-wrap{position:relative}
+.chart-wrap-sm{height:120px;position:relative}
+.chart-wrap-md{height:180px;position:relative}
+.chart-wrap-lg{height:240px;position:relative}
+
+/* ── TABLE ── */
+.vault-table{width:100%;border-collapse:collapse;font-size:.68rem}
+.vault-table th{
+  text-align:left;padding:8px 12px;
+  font-size:.52rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--muted);border-bottom:1px solid var(--border);
+}
+.vault-table td{padding:10px 12px;border-bottom:1px solid rgba(30,37,53,.8)}
+.vault-table tr:hover td{background:rgba(255,255,255,.02)}
+.vault-table tr:last-child td{border:none}
+
+/* ── BTC FLOW ── */
+.flow-node{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;background:var(--steel2);border:1px solid var(--border);
+  border-radius:4px;margin-bottom:8px;
+  transition:border-color .2s;
+}
+.flow-node:hover{border-color:var(--btc)}
+.fn-country{display:flex;align-items:center;gap:10px;font-size:.72rem}
+.fn-flag{font-size:1.2rem}
+.fn-flow-bar{flex:1;margin:0 16px;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.fn-fill{height:100%;border-radius:2px}
+.fn-btc{font-size:.72rem;color:var(--btc2)}
+.fn-dir{font-size:.65rem;padding:2px 8px;border-radius:2px}
+.dir-in{background:rgba(39,174,96,.1);color:#5dbb7a;border:1px solid rgba(39,174,96,.2)}
+.dir-out{background:rgba(192,57,43,.1);color:#e57a6e;border:1px solid rgba(192,57,43,.2)}
+
+/* ── COUNTRY CARD ── */
+.country-card{
+  background:var(--steel2);border:1px solid var(--border);
+  border-radius:6px;padding:16px;
+  transition:border-color .2s,transform .2s;cursor:pointer;
+}
+.country-card:hover{border-color:var(--gold);transform:translateY(-2px)}
+.cc-flag{font-size:2rem;margin-bottom:8px}
+.cc-name{font-family:'Cinzel',serif;font-size:.85rem;color:var(--bright);margin-bottom:4px}
+.cc-gdp{font-size:.62rem;color:var(--gold2);margin-bottom:8px}
+.cc-bar-row{display:flex;align-items:center;gap:8px;font-size:.55rem;color:var(--muted);margin-bottom:4px}
+.cc-mini-bar{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.cc-mini-fill{height:100%;border-radius:2px}
+
+/* ── VAULT DOCS ── */
+.doc-item{
+  display:flex;align-items:center;gap:14px;
+  padding:12px 14px;background:var(--steel2);border:1px solid var(--border);
+  border-radius:4px;margin-bottom:8px;cursor:pointer;
+  transition:all .2s;
+}
+.doc-item:hover{border-color:var(--gold);background:rgba(184,150,12,.04)}
+.doc-icon{font-size:1.4rem;flex-shrink:0}
+.doc-info{flex:1}
+.doc-name{font-size:.72rem;color:var(--bright);margin-bottom:2px}
+.doc-meta{font-size:.58rem;color:var(--muted)}
+.doc-lock{font-size:.8rem;color:var(--gold);opacity:.6}
+.doc-enc{
+  font-size:.52rem;padding:1px 6px;border-radius:2px;
+  background:rgba(184,150,12,.1);border:1px solid rgba(184,150,12,.2);
+  color:var(--gold);margin-left:6px;
+}
+
+/* ── WORLD MAP placeholder ── */
+.world-map-placeholder{
+  background:var(--steel2);border:1px solid var(--border);
+  border-radius:6px;height:200px;
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:8px;color:var(--muted);font-size:.7rem;
+  position:relative;overflow:hidden;
+}
+.wmp-grid{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(42,53,72,.4) 1px,transparent 1px),linear-gradient(90deg,rgba(42,53,72,.4) 1px,transparent 1px);
+  background-size:24px 24px;
+}
+/* Hot spots on world map */
+.wmp-dot{position:absolute;border-radius:50%;animation:mapPulse 2s ease infinite}
+@keyframes mapPulse{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.8);opacity:.4}}
+
+/* ── TICKER ── */
+.ticker-bar{
+  background:var(--steel);border:1px solid var(--border);
+  border-radius:4px;padding:10px 16px;margin-bottom:16px;
+  display:flex;gap:24px;overflow-x:auto;
+  scrollbar-width:none;
+}
+.ticker-bar::-webkit-scrollbar{display:none}
+.ticker-item{display:flex;align-items:center;gap:8px;white-space:nowrap;flex-shrink:0}
+.ti-name{font-size:.6rem;color:var(--muted);letter-spacing:.08em}
+.ti-val{font-size:.72rem;font-weight:500;color:var(--bright)}
+.ti-chg{font-size:.6rem}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--void)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){
+  #app{grid-template-columns:1fr}
+  #sidebar{display:none}
+  .stat-row{grid-template-columns:1fr 1fr}
+  .grid-2,.grid-3,.grid-2-1,.grid-1-2{grid-template-columns:1fr}
+}
+
+/* ── ANIMATIONS ── */
+.fade-in{animation:fadeIn .4s ease both}
+.fade-in:nth-child(1){animation-delay:.05s}
+.fade-in:nth-child(2){animation-delay:.1s}
+.fade-in:nth-child(3){animation-delay:.15s}
+.fade-in:nth-child(4){animation-delay:.2s}
+</style>
+</head>
+<body>
+
+<!-- ══ VAULT DOOR INTRO ══ -->
+<div id="vault-intro">
+  <svg class="vault-door-svg" width="120" height="140" viewBox="0 0 120 140">
+    <!-- Vault door -->
+    <rect x="5" y="5" width="110" height="130" rx="6" fill="#0c1018" stroke="#b8960c" stroke-width="2"/>
+    <rect x="12" y="12" width="96" height="116" rx="4" fill="#060810" stroke="#2a3548" stroke-width="1"/>
+    <!-- Dial -->
+    <circle cx="60" cy="65" r="28" fill="#111620" stroke="#b8960c" stroke-width="2"/>
+    <circle cx="60" cy="65" r="22" fill="#0c1018" stroke="#2a3548" stroke-width="1"/>
+    <circle cx="60" cy="65" r="4" fill="#b8960c"/>
+    <!-- Dial marks -->
+    <line x1="60" y1="40" x2="60" y2="47" stroke="#b8960c" stroke-width="1.5"/>
+    <line x1="60" y1="83" x2="60" y2="90" stroke="#b8960c" stroke-width="1"/>
+    <line x1="35" y1="65" x2="42" y2="65" stroke="#b8960c" stroke-width="1"/>
+    <line x1="78" y1="65" x2="85" y2="65" stroke="#b8960c" stroke-width="1"/>
+    <!-- Needle -->
+    <line x1="60" y1="65" x2="60" y2="44" stroke="#d4af37" stroke-width="2" stroke-linecap="round">
+      <animateTransform attributeName="transform" type="rotate" from="0 60 65" to="360 60 65" dur="2s" repeatCount="indefinite"/>
+    </line>
+    <!-- Handle -->
+    <rect x="88" y="58" width="18" height="14" rx="3" fill="#111620" stroke="#b8960c" stroke-width="1.5"/>
+    <!-- Bolts -->
+    <circle cx="18" cy="20" r="4" fill="#111620" stroke="#2a3548" stroke-width="1"/>
+    <circle cx="102" cy="20" r="4" fill="#111620" stroke="#2a3548" stroke-width="1"/>
+    <circle cx="18" cy="120" r="4" fill="#111620" stroke="#2a3548" stroke-width="1"/>
+    <circle cx="102" cy="120" r="4" fill="#111620" stroke="#2a3548" stroke-width="1"/>
+    <!-- Nightingale bird -->
+    <text x="60" y="110" text-anchor="middle" font-size="14" fill="#b8960c" opacity=".6">🐦</text>
+  </svg>
+  <div class="vault-code">▸ NIGHTINGALE_VAULT :: AUTHENTICATING ████████████</div>
+  <div class="vault-auth">CLEARANCE GRANTED · WELCOME BACK</div>
+</div>
+
+<!-- ══ NAV ══ -->
+<nav>
+  <div class="nav-brand">
+    <div class="nav-vault-icon">🔒</div>
+    <div>
+      <div class="brand-name">NIGHTINGALE <span>VAULT</span></div>
+    </div>
+  </div>
+  <div class="nav-modules">
+    <button class="nmod active" onclick="showView('overview',this)">Overview</button>
+    <button class="nmod" onclick="showView('btc',this)">₿ Flow</button>
+    <button class="nmod" onclick="showView('macro',this)">Macro</button>
+    <button class="nmod" onclick="showView('countries',this)">Countries</button>
+    <button class="nmod" onclick="showView('docs',this)">Vault</button>
+  </div>
+  <div class="nav-status">
+    <div class="status-chip"><div class="sdot sdot-gold"></div>ENCRYPTED</div>
+    <div class="status-chip"><div class="sdot sdot-cold"></div>LIVE DATA</div>
+    <div class="nav-clock" id="clock">--:--:-- UTC</div>
+  </div>
+</nav>
+
+<!-- ══ APP ══ -->
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="sb-section">
+      <div class="sb-section-label">Intelligence</div>
+      <div class="sb-item active" onclick="showView('overview',null)"><div class="sb-icon">◈</div>Overview</div>
+      <div class="sb-item" onclick="showView('btc',null)"><div class="sb-icon">₿</div>Bitcoin Flow<div class="sb-badge">LIVE</div></div>
+      <div class="sb-item" onclick="showView('macro',null)"><div class="sb-icon">🌊</div>Currency & Cashflow</div>
+      <div class="sb-item" onclick="showView('countries',null)"><div class="sb-icon">🌍</div>Economic Cultures</div>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-label">Government</div>
+      <div class="sb-item" onclick="showView('govspend',null)"><div class="sb-icon">🏛️</div>Spending Tracker</div>
+      <div class="sb-item" onclick="showView('debt',null)"><div class="sb-icon">📊</div>Debt Monitor</div>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-label">Personal Vault</div>
+      <div class="sb-item" onclick="showView('networth',null)"><div class="sb-icon">💎</div>Net Worth</div>
+      <div class="sb-item" onclick="showView('docs',null)"><div class="sb-icon">🔐</div>Documents<div class="sb-badge">12</div></div>
+      <div class="sb-item"><div class="sb-icon">🔑</div>Credentials</div>
+    </div>
+
+    <div class="vault-meter">
+      <div class="vm-label">Vault Security</div>
+      <div class="vm-val">AES-256</div>
+      <div class="vm-bar-bg"><div class="vm-bar" style="width:100%"></div></div>
+    </div>
+    <div class="vault-meter">
+      <div class="vm-label">Storage Used</div>
+      <div class="vm-val">4.2 GB</div>
+      <div class="vm-bar-bg"><div class="vm-bar" style="width:42%"></div></div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div id="main">
+
+    <!-- ══ OVERVIEW ══ -->
+    <div class="view active" id="view-overview">
+
+      <!-- Ticker -->
+      <div class="ticker-bar">
+        <div class="ticker-item"><span class="ti-name">BTC/USD</span><span class="ti-val" id="t-btc">$84,420</span><span class="ti-chg delta-up">▲ +2.4%</span></div>
+        <div class="ticker-item"><span class="ti-name">ETH/USD</span><span class="ti-val">$3,218</span><span class="ti-chg delta-up">▲ +1.8%</span></div>
+        <div class="ticker-item"><span class="ti-name">EUR/USD</span><span class="ti-val">1.0842</span><span class="ti-chg delta-dn">▼ −0.3%</span></div>
+        <div class="ticker-item"><span class="ti-name">GBP/USD</span><span class="ti-val">1.2634</span><span class="ti-chg delta-up">▲ +0.1%</span></div>
+        <div class="ticker-item"><span class="ti-name">GOLD/oz</span><span class="ti-val">$3,042</span><span class="ti-chg delta-up">▲ +0.8%</span></div>
+        <div class="ticker-item"><span class="ti-name">S&P 500</span><span class="ti-val">5,648</span><span class="ti-chg delta-dn">▼ −0.2%</span></div>
+        <div class="ticker-item"><span class="ti-name">US 10Y</span><span class="ti-val">4.28%</span><span class="ti-chg delta-neu">→ flat</span></div>
+        <div class="ticker-item"><span class="ti-name">OIL WTI</span><span class="ti-val">$76.40</span><span class="ti-chg delta-dn">▼ −1.1%</span></div>
+        <div class="ticker-item"><span class="ti-name">USD/JPY</span><span class="ti-val">149.82</span><span class="ti-chg delta-up">▲ +0.4%</span></div>
+      </div>
+
+      <div class="page-header">
+        <div>
+          <div class="ph-eyebrow">Nightingale Vault · Intelligence Layer</div>
+          <div class="ph-title">OVERVIEW</div>
+          <div class="ph-sub">Global wealth intelligence · Personal asset security · Live market data</div>
+        </div>
+        <div class="ph-meta">
+          <div style="color:var(--gold)">VAULT STATUS: SECURED</div>
+          <div>Last sync: March 18, 2026</div>
+          <div>Encryption: AES-256-GCM</div>
+        </div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-card sc-gold fade-in">
+          <div class="stat-label">Net Worth (Est.)</div>
+          <div class="stat-val">$284,600</div>
+          <div class="stat-delta delta-up">▲ +$12,400 this month</div>
+        </div>
+        <div class="stat-card sc-btc fade-in">
+          <div class="stat-label">BTC Holdings</div>
+          <div class="stat-val">2.14 BTC</div>
+          <div class="stat-delta delta-up">▲ $180,659 value</div>
+        </div>
+        <div class="stat-card sc-cold fade-in">
+          <div class="stat-label">Global Fear Index</div>
+          <div class="stat-val">42 / Neutral</div>
+          <div class="stat-delta delta-neu">→ Stable 3 weeks</div>
+        </div>
+        <div class="stat-card sc-safe fade-in">
+          <div class="stat-label">Vault Documents</div>
+          <div class="stat-val">12 Files</div>
+          <div class="stat-delta" style="color:var(--gold)">● All encrypted</div>
+        </div>
+      </div>
+
+      <div class="grid-2-1">
+        <div class="card">
+          <div class="card-title">Bitcoin On-Chain Flow — 30 Days <span class="card-badge">LIVE</span></div>
+          <div class="chart-wrap-md"><canvas id="btcFlowChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Asset Allocation</div>
+          <div class="chart-wrap-md"><canvas id="allocationChart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">Top BTC Buying Nations</div>
+          <div class="flow-node"><div class="fn-country"><span class="fn-flag">🇺🇸</span>United States</div><div class="fn-flow-bar"><div class="fn-fill" style="width:92%;background:var(--btc)"></div></div><span class="fn-btc">$8.2B</span><span class="fn-dir dir-in">BUY</span></div>
+          <div class="flow-node"><div class="fn-country"><span class="fn-flag">🇬🇧</span>United Kingdom</div><div class="fn-flow-bar"><div class="fn-fill" style="width:58%;background:var(--btc)"></div></div><span class="fn-btc">$3.1B</span><span class="fn-dir dir-in">BUY</span></div>
+          <div class="flow-node"><div class="fn-country"><span class="fn-flag">🇩🇪</span>Germany</div><div class="fn-flow-bar"><div class="fn-fill" style="width:48%;background:var(--btc)"></div></div><span class="fn-btc">$2.6B</span><span class="fn-dir dir-in">BUY</span></div>
+          <div class="flow-node"><div class="fn-country"><span class="fn-flag">🇸🇬</span>Singapore</div><div class="fn-flow-bar"><div class="fn-fill" style="width:38%;background:var(--gold)"></div></div><span class="fn-btc">$2.0B</span><span class="fn-dir dir-in">BUY</span></div>
+          <div class="flow-node"><div class="fn-country"><span class="fn-flag">🇨🇳</span>China (OTC)</div><div class="fn-flow-bar"><div class="fn-fill" style="width:28%;background:var(--danger)"></div></div><span class="fn-btc">$1.5B</span><span class="fn-dir dir-out">SELL</span></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Currency Strength Index</div>
+          <div class="chart-wrap-md"><canvas id="currencyChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Gov Spending Alerts</div>
+          <div style="display:grid;gap:8px">
+            <div style="padding:10px 12px;background:var(--steel2);border:1px solid rgba(192,57,43,.3);border-radius:4px;font-size:.65rem;line-height:1.6">
+              <div style="color:#e57a6e;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">⚠ HIGH DEFICIT</div>
+              🇺🇸 US deficit hits $1.9T · Fed spending up 8% YoY
+            </div>
+            <div style="padding:10px 12px;background:var(--steel2);border:1px solid rgba(184,150,12,.3);border-radius:4px;font-size:.65rem;line-height:1.6">
+              <div style="color:var(--gold);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">▸ NOTABLE</div>
+              🇸🇦 Saudi Arabia: $940B Vision 2030 spend accelerating
+            </div>
+            <div style="padding:10px 12px;background:var(--steel2);border:1px solid rgba(39,174,96,.3);border-radius:4px;font-size:.65rem;line-height:1.6">
+              <div style="color:#5dbb7a;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">✓ SURPLUS</div>
+              🇳🇴 Norway sovereign fund reaches $1.7T record
+            </div>
+            <div style="padding:10px 12px;background:var(--steel2);border:1px solid rgba(74,144,184,.3);border-radius:4px;font-size:.65rem;line-height:1.6">
+              <div style="color:var(--cold2);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px">ℹ INFO</div>
+              🇨🇳 China stimulus package: ¥3T infrastructure push
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /overview -->
+
+    <!-- ══ BTC FLOW ══ -->
+    <div class="view" id="view-btc">
+      <div class="page-header">
+        <div>
+          <div class="ph-eyebrow">On-Chain Intelligence · Bitcoin</div>
+          <div class="ph-title">₿ BITCOIN FLOW</div>
+          <div class="ph-sub">Global BTC movement · Exchange flows · Whale activity · Country adoption</div>
+        </div>
+        <div class="ph-meta" style="color:var(--btc2)">
+          BTC/USD $84,420<br>
+          <span style="font-size:.55rem;color:var(--muted)">Market Cap: $1.67T</span>
+        </div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-card sc-btc"><div class="stat-label">BTC Price</div><div class="stat-val" style="color:var(--btc2)">$84,420</div><div class="stat-delta delta-up">▲ +2.4% 24h</div></div>
+        <div class="stat-card sc-btc"><div class="stat-label">Exchange Inflow 24h</div><div class="stat-val">28,400 BTC</div><div class="stat-delta delta-dn">▼ Selling pressure</div></div>
+        <div class="stat-card sc-gold"><div class="stat-label">Exchange Outflow 24h</div><div class="stat-val">31,200 BTC</div><div class="stat-delta delta-up">▲ Accumulation</div></div>
+        <div class="stat-card sc-cold"><div class="stat-label">Whale Wallets Active</div><div class="stat-val">1,842</div><div class="stat-delta delta-up">▲ +124 today</div></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">BTC Price + Volume — 90 Days <span class="card-badge">Simulated</span></div>
+          <div class="chart-wrap-lg"><canvas id="btcPriceChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Exchange Flow Balance — 30 Days</div>
+          <div class="chart-wrap-lg"><canvas id="exchangeFlowChart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="grid-1-2">
+        <div class="card">
+          <div class="card-title">Adoption Leaders</div>
+          <table class="vault-table">
+            <thead><tr><th>Country</th><th>Rank</th><th>Index</th><th>Trend</th></tr></thead>
+            <tbody>
+              <tr><td>🇺🇸 USA</td><td style="color:var(--gold2)">#1</td><td>94</td><td class="delta-up">▲</td></tr>
+              <tr><td>🇳🇬 Nigeria</td><td style="color:var(--gold2)">#2</td><td>88</td><td class="delta-up">▲▲</td></tr>
+              <tr><td>🇮🇳 India</td><td style="color:var(--gold2)">#3</td><td>82</td><td class="delta-up">▲</td></tr>
+              <tr><td>🇬🇧 UK</td><td style="color:var(--gold2)">#4</td><td>79</td><td class="delta-neu">→</td></tr>
+              <tr><td>🇧🇷 Brazil</td><td style="color:var(--gold2)">#5</td><td>76</td><td class="delta-up">▲</td></tr>
+              <tr><td>🇻🇳 Vietnam</td><td style="color:var(--gold2)">#6</td><td>74</td><td class="delta-up">▲▲</td></tr>
+              <tr><td>🇦🇺 Australia</td><td style="color:var(--gold2)">#7</td><td>71</td><td class="delta-neu">→</td></tr>
+              <tr><td>🇵🇭 Philippines</td><td style="color:var(--gold2)">#8</td><td>68</td><td class="delta-up">▲</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-title">Global BTC Flow Map</div>
+          <div class="world-map-placeholder">
+            <div class="wmp-grid"></div>
+            <!-- Flow dots -->
+            <div class="wmp-dot" style="width:14px;height:14px;background:var(--btc);opacity:.7;top:32%;left:22%"></div>
+            <div class="wmp-dot" style="width:10px;height:10px;background:var(--btc);opacity:.6;top:28%;left:48%;animation-delay:.5s"></div>
+            <div class="wmp-dot" style="width:12px;height:12px;background:var(--gold);opacity:.7;top:38%;left:62%;animation-delay:1s"></div>
+            <div class="wmp-dot" style="width:8px;height:8px;background:var(--btc);opacity:.5;top:55%;left:78%;animation-delay:1.5s"></div>
+            <div class="wmp-dot" style="width:10px;height:10px;background:var(--safe);opacity:.7;top:60%;left:32%;animation-delay:.8s"></div>
+            <div class="wmp-dot" style="width:8px;height:8px;background:var(--btc);opacity:.6;top:42%;left:72%;animation-delay:.3s"></div>
+            <div class="wmp-dot" style="width:6px;height:6px;background:var(--cold);opacity:.7;top:25%;left:55%;animation-delay:1.2s"></div>
+            <span style="position:relative;z-index:2;font-size:.6rem;letter-spacing:.1em">GLOBAL BTC FLOW · LIVE</span>
+            <span style="position:relative;z-index:2;font-size:.55rem;color:var(--muted)">Connect Chainalysis API for real-time data</span>
+          </div>
+
+          <div style="margin-top:12px">
+            <div class="card-title" style="margin-bottom:10px">Active Flow Corridors</div>
+            <div class="flow-node"><div class="fn-country"><span class="fn-flag">🇺🇸</span>USA → 🇪🇺 EU</div><div class="fn-flow-bar"><div class="fn-fill" style="width:82%;background:var(--btc)"></div></div><span class="fn-btc">4,200 BTC</span><span class="fn-dir dir-in">FLOW</span></div>
+            <div class="flow-node"><div class="fn-country"><span class="fn-flag">🇨🇳</span>CN → 🇸🇬 SG</div><div class="fn-flow-bar"><div class="fn-fill" style="width:65%;background:var(--gold)"></div></div><span class="fn-btc">3,100 BTC</span><span class="fn-dir dir-out">OTC</span></div>
+            <div class="flow-node"><div class="fn-country"><span class="fn-flag">🇳🇬</span>NG → 🇬🇧 UK</div><div class="fn-flow-bar"><div class="fn-fill" style="width:44%;background:var(--safe)"></div></div><span class="fn-btc">1,800 BTC</span><span class="fn-dir dir-in">P2P</span></div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /btc -->
+
+    <!-- ══ MACRO / CURRENCY ══ -->
+    <div class="view" id="view-macro">
+      <div class="page-header">
+        <div>
+          <div class="ph-eyebrow">Macro Intelligence · Cashflow</div>
+          <div class="ph-title">CURRENCY & CASHFLOW</div>
+          <div class="ph-sub">Global money movement · FX rates · Capital flows · Inflation map</div>
+        </div>
+        <div class="ph-meta"><div style="color:var(--cold2)">FX LIVE</div><div>Updated hourly</div></div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-card sc-cold"><div class="stat-label">USD Index (DXY)</div><div class="stat-val">104.8</div><div class="stat-delta delta-up">▲ +0.4%</div></div>
+        <div class="stat-card sc-gold"><div class="stat-label">Gold Price</div><div class="stat-val">$3,042</div><div class="stat-delta delta-up">▲ ATH</div></div>
+        <div class="stat-card sc-btc"><div class="stat-label">Global Inflation Avg</div><div class="stat-val">4.2%</div><div class="stat-delta delta-dn">▼ Easing</div></div>
+        <div class="stat-card sc-safe"><div class="stat-label">EM Capital Inflows</div><div class="stat-val">$84B</div><div class="stat-delta delta-up">▲ Q1 2026</div></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">G10 Currency Performance YTD <span class="card-badge">vs USD</span></div>
+          <div class="chart-wrap-lg"><canvas id="fxChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Global Inflation Heatmap 2026</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px">
+            <div style="padding:10px;background:var(--steel2);border:1px solid rgba(192,57,43,.3);border-radius:4px">
+              <div style="font-size:.55rem;text-transform:uppercase;letter-spacing:.1em;color:#e57a6e;margin-bottom:4px">HIGH INFLATION (&gt;8%)</div>
+              <div style="font-size:.7rem;line-height:2">🇦🇷 Argentina 142%<br>🇹🇷 Turkey 65%<br>🇪🇬 Egypt 34%<br>🇵🇰 Pakistan 28%</div>
+            </div>
+            <div style="padding:10px;background:var(--steel2);border:1px solid rgba(184,150,12,.3);border-radius:4px">
+              <div style="font-size:.55rem;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin-bottom:4px">ELEVATED (4–8%)</div>
+              <div style="font-size:.7rem;line-height:2">🇮🇳 India 5.8%<br>🇧🇷 Brazil 4.9%<br>🇿🇦 S.Africa 5.2%<br>🇲🇽 Mexico 4.4%</div>
+            </div>
+            <div style="padding:10px;background:var(--steel2);border:1px solid rgba(74,144,184,.3);border-radius:4px">
+              <div style="font-size:.55rem;text-transform:uppercase;letter-spacing:.1em;color:var(--cold2);margin-bottom:4px">MODERATE (2–4%)</div>
+              <div style="font-size:.7rem;line-height:2">🇺🇸 USA 3.1%<br>🇬🇧 UK 2.8%<br>🇦🇺 Australia 3.4%<br>🇨🇦 Canada 2.6%</div>
+            </div>
+            <div style="padding:10px;background:var(--steel2);border:1px solid rgba(39,174,96,.3);border-radius:4px">
+              <div style="font-size:.55rem;text-transform:uppercase;letter-spacing:.1em;color:#5dbb7a;margin-bottom:4px">LOW (&lt;2%)</div>
+              <div style="font-size:.7rem;line-height:2">🇪🇺 Eurozone 1.9%<br>🇯🇵 Japan 1.4%<br>🇨🇭 Switzerland 1.1%<br>🇸🇬 Singapore 1.6%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Live FX Rates — Major Pairs <span class="card-badge">vs USD · March 18, 2026</span></div>
+        <table class="vault-table">
+          <thead><tr><th>Pair</th><th>Rate</th><th>24h Change</th><th>1W</th><th>1M</th><th>Trend</th></tr></thead>
+          <tbody>
+            <tr><td>EUR/USD</td><td>1.0842</td><td class="delta-dn">−0.30%</td><td class="delta-dn">−0.8%</td><td class="delta-up">+1.2%</td><td>↘ Weakening</td></tr>
+            <tr><td>GBP/USD</td><td>1.2634</td><td class="delta-up">+0.12%</td><td class="delta-up">+0.4%</td><td class="delta-up">+2.1%</td><td>↗ Strengthening</td></tr>
+            <tr><td>USD/JPY</td><td>149.82</td><td class="delta-up">+0.38%</td><td class="delta-up">+1.1%</td><td class="delta-dn">−2.4%</td><td>↗ USD strong</td></tr>
+            <tr><td>USD/CHF</td><td>0.9012</td><td class="delta-neu">+0.02%</td><td class="delta-dn">−0.3%</td><td class="delta-dn">−0.9%</td><td>→ Stable</td></tr>
+            <tr><td>AUD/USD</td><td>0.6428</td><td class="delta-dn">−0.21%</td><td class="delta-dn">−1.2%</td><td class="delta-dn">−3.1%</td><td>↘ Under pressure</td></tr>
+            <tr><td>USD/CAD</td><td>1.3582</td><td class="delta-up">+0.18%</td><td class="delta-up">+0.6%</td><td class="delta-neu">+0.1%</td><td>→ Range-bound</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div><!-- /macro -->
+
+    <!-- ══ COUNTRIES ══ -->
+    <div class="view" id="view-countries">
+      <div class="page-header">
+        <div>
+          <div class="ph-eyebrow">Wealth Intelligence · Culture</div>
+          <div class="ph-title">ECONOMIC CULTURES</div>
+          <div class="ph-sub">Country-by-country wealth culture · Financial behaviour · Investment climate</div>
+        </div>
+        <div class="ph-meta"><div style="color:var(--gold2)">12 Profiles Active</div><div>Quarterly updated</div></div>
+      </div>
+      <div class="grid-3" id="countryGrid"></div>
+    </div><!-- /countries -->
+
+    <!-- ══ DOCS (VAULT) ══ -->
+    <div class="view" id="view-docs">
+      <div class="page-header">
+        <div>
+          <div class="ph-eyebrow">Personal Fortress · Encrypted Storage</div>
+          <div class="ph-title">THE VAULT</div>
+          <div class="ph-sub">Your encrypted documents, IP, credentials, and private files</div>
+        </div>
+        <div class="ph-meta">
+          <div style="color:var(--gold2)">🔒 AES-256-GCM</div>
+          <div>12 files · 4.2 GB</div>
+        </div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-card sc-gold"><div class="stat-label">Documents</div><div class="stat-val">12</div><div class="stat-delta" style="color:var(--gold)">● All encrypted</div></div>
+        <div class="stat-card sc-cold"><div class="stat-label">Storage Used</div><div class="stat-val">4.2 GB</div><div class="stat-delta delta-neu">of 10 GB</div></div>
+        <div class="stat-card sc-safe"><div class="stat-label">Last Access</div><div class="stat-val">Today</div><div class="stat-delta" style="color:var(--safe)">✓ Verified</div></div>
+        <div class="stat-card sc-btc"><div class="stat-label">Backups</div><div class="stat-val">3 Copies</div><div class="stat-delta delta-up">▲ All synced</div></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">📋 Legal & Identity</div>
+          <div class="doc-item"><div class="doc-icon">🪪</div><div class="doc-info"><div class="doc-name">Passport & ID Documents<span class="doc-enc">ENC</span></div><div class="doc-meta">Updated Jan 2026 · 4 files · 12.4 MB</div></div><div class="doc-lock">🔒</div></div>
+          <div class="doc-item"><div class="doc-icon">📜</div><div class="doc-info"><div class="doc-name">Company Registration — Nightingale Intelligence<span class="doc-enc">ENC</span></div><div class="doc-meta">Registered 2024 · 3 files · 8.2 MB</div></div><div class="doc-lock">🔒</div></div>
+          <div class="doc-item"><div class="doc-icon">⚖️</div><div class="doc-info"><div class="doc-name">IP & Trademark Registrations<span class="doc-enc">ENC</span></div><div class="doc-meta">5 trademarks · Nightingale ecosystem · 6.8 MB</div></div><div class="doc-lock">🔒</div></div>
+          <div class="doc-item"><div class="doc-icon">🏠</div><div class="doc-info"><div class="doc-name">Property Deeds & Leases<span class="doc-enc">ENC</span></div><div class="doc-meta">2 properties · Updated Dec 2025</div></div><div class="doc-lock">🔒</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">💰 Financial Records</div>
+          <div class="doc-item"><div class="doc-icon">📊</div><div class="doc-info"><div class="doc-name">Tax Returns 2022–2025<span class="doc-enc">ENC</span></div><div class="doc-meta">4 years · HMRC / IRS · 18.4 MB</div></div><div class="doc-lock">🔒</div></div>
+          <div class="doc-item"><div class="doc-icon">🏦</div><div class="doc-info"><div class="doc-name">Bank Account Records<span class="doc-enc">ENC</span></div><div class="doc-meta">3 accounts · 24 months statements</div></div><div class="doc-lock">🔒</div></div>
+          <div class="doc-item"><div class="doc-icon">₿</div><div class="doc-info"><div class="doc-name">Crypto Wallet Seeds & Records<span class="doc-enc">ENC</span></div><div class="doc-meta">Hardware wallet backup · Never cloud-synced</div></div><div class="doc-lock">🔒</div></div>
+          <div class="doc-item"><div class="doc-icon">📈</div><div class="doc-info"><div class="doc-name">Investment Portfolio Statements<span class="doc-enc">ENC</span></div><div class="doc-meta">Stocks · Bonds · Real estate · Q4 2025</div></div><div class="doc-lock">🔒</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">🎨 Creative IP & Media</div>
+          <div class="doc-item"><div class="doc-icon">🐦</div><div class="doc-info"><div class="doc-name">Nightingale Brand Assets<span class="doc-enc">ENC</span></div><div class="doc-meta">Logos · Fonts · Style guides · 1.2 GB</div></div><div class="doc-lock">🔒</div></div>
+          <div class="doc-item"><div class="doc-icon">🏗️</div><div class="doc-info"><div class="doc-name">Architecture Design Files<span class="doc-enc">ENC</span></div><div class="doc-meta">OpenSCAD · Grasshopper · G-code · 2.1 GB</div></div><div class="doc-lock">🔒</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">🔑 Credentials & Access</div>
+          <div style="padding:14px;background:var(--steel2);border:1px solid rgba(184,150,12,.3);border-radius:4px;margin-bottom:8px;font-size:.68rem;line-height:1.8">
+            <div style="color:var(--gold);font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:6px">⚠ ULTRA-SECURE ZONE</div>
+            Credentials stored with zero-knowledge encryption. Not even Nightingale Vault servers can read these. Master password required for decryption.
+          </div>
+          <div class="doc-item"><div class="doc-icon">🔐</div><div class="doc-info"><div class="doc-name">Password Vault (128 entries)<span class="doc-enc">ENC</span></div><div class="doc-meta">Zero-knowledge · Local decrypt only</div></div><div class="doc-lock">🔒</div></div>
+          <div class="doc-item"><div class="doc-icon">🗝️</div><div class="doc-info"><div class="doc-name">2FA Recovery Codes<span class="doc-enc">ENC</span></div><div class="doc-meta">24 services · Never transmitted</div></div><div class="doc-lock">🔒</div></div>
+        </div>
+      </div>
+    </div><!-- /docs -->
+
+    <!-- ══ NET WORTH ══ -->
+    <div class="view" id="view-networth">
+      <div class="page-header">
+        <div>
+          <div class="ph-eyebrow">Personal Intelligence · Wealth</div>
+          <div class="ph-title">NET WORTH</div>
+          <div class="ph-sub">Asset tracking · Liability overview · Wealth trajectory</div>
+        </div>
+        <div class="ph-meta"><div style="color:var(--gold2);font-family:'Cinzel',serif;font-size:1.4rem">$284,600</div><div style="color:var(--safe)">▲ +$12,400 this month</div></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Net Worth Trajectory — 24 Months</div>
+          <div class="chart-wrap-lg"><canvas id="networthChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Asset Breakdown</div>
+          <div class="chart-wrap-lg"><canvas id="networthBreakdown"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ GOV SPEND ══ -->
+    <div class="view" id="view-govspend">
+      <div class="page-header">
+        <div>
+          <div class="ph-eyebrow">Government Intelligence · Public Finance</div>
+          <div class="ph-title">GOVERNMENT SPENDING</div>
+          <div class="ph-sub">Where nations spend · Debt levels · Surplus & deficit · Budget breakdowns</div>
+        </div>
+        <div class="ph-meta"><div style="color:var(--cold2)">IMF · World Bank Data</div></div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">G10 Government Debt as % of GDP 2026 <span class="card-badge">IMF</span></div>
+        <div class="chart-wrap-lg"><canvas id="govDebtChart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Spending Category Breakdown — United States 2026 Budget</div>
+        <div class="chart-wrap-md"><canvas id="usSpendChart"></canvas></div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+/* ── CLOCK ── */
+function tick(){
+  const n=new Date();const p=x=>String(x).padStart(2,'0');
+  document.getElementById('clock').textContent=`${p(n.getUTCHours())}:${p(n.getUTCMinutes())}:${p(n.getUTCSeconds())} UTC`;
+}
+setInterval(tick,1000);tick();
+
+/* ── VIEW SWITCHER ── */
+function showView(id, btn){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nmod').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('view-'+id);
+  if(el)el.classList.add('active');
+  if(btn)btn.classList.add('active');
+}
+
+/* ── CHART DEFAULTS ── */
+Chart.defaults.color='#4a5568';
+Chart.defaults.borderColor='#1e2535';
+Chart.defaults.font.family="'Share Tech Mono',monospace";
+Chart.defaults.font.size=10;
+
+const GOLD='#d4af37';const COLD='#4a90b8';const BTC='#f7931a';
+const SAFE='#27ae60';const DANGER='#c0392b';const MUTED='#2a3548';
+
+/* BTC Flow Overview */
+const days30=Array.from({length:30},(_,i)=>`D-${30-i}`);
+new Chart(document.getElementById('btcFlowChart'),{
+  type:'line',
+  data:{labels:days30,datasets:[
+    {label:'Exchange Inflow',data:Array.from({length:30},()=>20000+Math.random()*15000),borderColor:DANGER,backgroundColor:'rgba(192,57,43,.08)',tension:.4,borderWidth:1.5,pointRadius:0,fill:true},
+    {label:'Exchange Outflow',data:Array.from({length:30},()=>22000+Math.random()*14000),borderColor:SAFE,backgroundColor:'rgba(39,174,96,.08)',tension:.4,borderWidth:1.5,pointRadius:0,fill:true},
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:8,padding:12}}},scales:{x:{grid:{color:MUTED},ticks:{maxTicksLimit:6}},y:{grid:{color:MUTED}}}}
+});
+
+/* Asset Allocation */
+new Chart(document.getElementById('allocationChart'),{
+  type:'doughnut',
+  data:{
+    labels:['Bitcoin','Stocks','Cash','Property','Gold','Other'],
+    datasets:[{data:[34,28,18,12,5,3],backgroundColor:['#f7931a','#4a90b8','#4a5568','#b8960c','#d4af37','#2a3548'],borderColor:'#060810',borderWidth:3}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'right',labels:{boxWidth:8,padding:10}}}}
+});
+
+/* Currency strength */
+new Chart(document.getElementById('currencyChart'),{
+  type:'bar',
+  data:{
+    labels:['USD','CHF','GBP','EUR','JPY','AUD','CAD','NZD'],
+    datasets:[{data:[104.8,102.1,98.4,96.2,88.1,86.4,91.2,84.8],backgroundColor:(ctx)=>ctx.raw>100?GOLD:ctx.raw>95?COLD:MUTED,borderColor:'transparent',borderRadius:2}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:MUTED},min:80}}}
+});
+
+/* BTC Price 90d */
+const price90=Array.from({length:90},(_,i)=>62000+i*250+Math.sin(i*.3)*3000+Math.random()*4000);
+new Chart(document.getElementById('btcPriceChart'),{
+  type:'line',
+  data:{labels:Array.from({length:90},(_,i)=>i%10===0?`D-${90-i}`:''),datasets:[
+    {label:'BTC/USD',data:price90,borderColor:BTC,backgroundColor:'rgba(247,147,26,.08)',tension:.3,borderWidth:2,pointRadius:0,fill:true}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:MUTED}},y:{grid:{color:MUTED},ticks:{callback:v=>'$'+Math.round(v/1000)+'k'}}}}
+});
+
+/* Exchange Flow */
+const netFlow=Array.from({length:30},()=>(Math.random()-0.48)*8000);
+new Chart(document.getElementById('exchangeFlowChart'),{
+  type:'bar',
+  data:{labels:days30,datasets:[{label:'Net Flow (BTC)',data:netFlow,backgroundColor:netFlow.map(v=>v>0?'rgba(39,174,96,.7)':'rgba(192,57,43,.7)'),borderColor:netFlow.map(v=>v>0?SAFE:DANGER),borderWidth:1,borderRadius:2}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:MUTED},ticks:{maxTicksLimit:6}},y:{grid:{color:MUTED}}}}
+});
+
+/* FX Chart */
+new Chart(document.getElementById('fxChart'),{
+  type:'bar',
+  data:{
+    labels:['EUR','GBP','JPY','CHF','AUD','CAD','NZD','NOK','SEK','DKK'],
+    datasets:[{label:'YTD vs USD (%)',data:[-1.2,2.1,-4.8,-0.4,-3.1,0.2,-2.8,1.4,0.8,-0.6],backgroundColor:(ctx)=>ctx.raw>0?'rgba(39,174,96,.7)':'rgba(192,57,43,.7)',borderColor:(ctx)=>ctx.raw>0?SAFE:DANGER,borderWidth:1,borderRadius:2}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:MUTED},ticks:{callback:v=>v+'%'}}}}
+});
+
+/* Country cards */
+const countries=[
+  {flag:'🇺🇸',name:'United States',gdp:'$27.4T',wealth:92,crypto:88,invest:85,risk:42,profile:'Consumer-driven, equity-obsessed. World reserve currency. High household debt. BTC ETF leader.'},
+  {flag:'🇬🇧',name:'United Kingdom',gdp:'$3.1T',wealth:78,crypto:72,invest:80,risk:38,profile:'Finance-led. London as global hub. Post-Brexit reorientation. Strong crypto regulation.'},
+  {flag:'🇩🇪',name:'Germany',gdp:'$4.4T',wealth:74,crypto:60,invest:76,risk:28,profile:'Engineering & export economy. Conservative savers. Low household debt. Sceptical of crypto.'},
+  {flag:'🇸🇬',name:'Singapore',gdp:'$0.5T',wealth:95,crypto:82,invest:92,risk:20,profile:'Wealth management hub. Crypto-friendly regulation. High per capita wealth. Strategic reserve.'},
+  {flag:'🇳🇬',name:'Nigeria',gdp:'$0.4T',wealth:38,crypto:92,invest:44,risk:72,profile:'Largest BTC P2P market globally. Currency instability drives crypto adoption. Young population.'},
+  {flag:'🇯🇵',name:'Japan',gdp:'$4.2T',wealth:70,crypto:55,invest:65,risk:30,profile:'Ageing saver economy. Massive gov debt. Yen carry trade. First country to regulate exchanges.'},
+  {flag:'🇦🇪',name:'UAE',gdp:'$0.5T',wealth:90,crypto:86,invest:88,risk:22,profile:'Gulf wealth hub. No income tax. Crypto-friendly DIFC laws. Rapid wealth accumulation.'},
+  {flag:'🇨🇭',name:'Switzerland',gdp:'$0.8T',wealth:96,crypto:78,invest:90,risk:15,profile:'Oldest wealth management tradition. Crypto Valley (Zug). Strongest bank secrecy in world.'},
+  {flag:'🇧🇷',name:'Brazil',gdp:'$2.1T',wealth:52,crypto:76,invest:58,risk:58,profile:'Largest LatAm economy. High inflation history → crypto hedge. PIX payments revolution.'},
+];
+const cg=document.getElementById('countryGrid');
+countries.forEach(c=>{
+  cg.innerHTML+=`<div class="country-card fade-in">
+    <div class="cc-flag">${c.flag}</div>
+    <div class="cc-name">${c.name}</div>
+    <div class="cc-gdp">${c.gdp} GDP</div>
+    <div class="cc-bar-row"><span style="min-width:60px">Wealth</span><div class="cc-mini-bar"><div class="cc-mini-fill" style="width:${c.wealth}%;background:${GOLD}"></div></div><span>${c.wealth}</span></div>
+    <div class="cc-bar-row"><span style="min-width:60px">Crypto</span><div class="cc-mini-bar"><div class="cc-mini-fill" style="width:${c.crypto}%;background:${BTC}"></div></div><span>${c.crypto}</span></div>
+    <div class="cc-bar-row"><span style="min-width:60px">Invest</span><div class="cc-mini-bar"><div class="cc-mini-fill" style="width:${c.invest}%;background:${COLD}"></div></div><span>${c.invest}</span></div>
+    <div style="margin-top:10px;font-size:.62rem;color:#4a5568;line-height:1.6">${c.profile}</div>
+  </div>`;
+});
+
+/* Net worth trajectory */
+const nwData=Array.from({length:24},(_,i)=>180000+i*4800+Math.random()*8000);
+new Chart(document.getElementById('networthChart'),{
+  type:'line',
+  data:{labels:Array.from({length:24},(_,i)=>`M-${24-i}`),datasets:[
+    {label:'Net Worth',data:nwData,borderColor:GOLD,backgroundColor:'rgba(212,175,55,.08)',tension:.4,borderWidth:2,pointRadius:1.5,fill:true}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:MUTED},ticks:{maxTicksLimit:6}},y:{grid:{color:MUTED},ticks:{callback:v=>'$'+Math.round(v/1000)+'k'}}}}
+});
+new Chart(document.getElementById('networthBreakdown'),{
+  type:'doughnut',
+  data:{labels:['Bitcoin','Stocks & ETFs','Cash','Property','Pension','Other'],datasets:[{data:[63,52,32,80,40,18],backgroundColor:['#f7931a','#4a90b8','#4a5568','#b8960c','#27ae60','#2a3548'],borderColor:'#060810',borderWidth:3}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{position:'right',labels:{boxWidth:8,padding:10}}}}
+});
+
+/* Gov debt */
+new Chart(document.getElementById('govDebtChart'),{
+  type:'bar',
+  data:{
+    labels:['Japan','Italy','USA','France','UK','Canada','Germany','Australia','Norway','Switzerland'],
+    datasets:[{label:'Debt % GDP',data:[256,144,123,112,101,98,68,54,42,28],backgroundColor:(ctx)=>ctx.raw>120?'rgba(192,57,43,.7)':ctx.raw>80?'rgba(212,175,55,.7)':'rgba(39,174,96,.7)',borderColor:'transparent',borderRadius:2}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:MUTED},ticks:{callback:v=>v+'%'}}}}
+});
+new Chart(document.getElementById('usSpendChart'),{
+  type:'bar',
+  data:{
+    labels:['Social Security','Healthcare','Defense','Interest','Education','Transport','Other'],
+    datasets:[{label:'$ Billions',data:[1420,1180,886,745,280,148,620],backgroundColor:[GOLD,COLD,DANGER,BTC,'rgba(39,174,96,.7)','rgba(74,144,184,.6)',MUTED],borderColor:'transparent',borderRadius:2}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{color:MUTED},ticks:{callback:v=>'$'+v+'B'}},y:{grid:{display:false}}}}
+});
+
+/* BTC price ticker simulation */
+let btcP=84420;
+setInterval(()=>{
+  btcP+=Math.round((Math.random()-0.5)*180);
+  const el=document.getElementById('t-btc');
+  if(el)el.textContent='$'+btcP.toLocaleString();
+},3000);
+</script>
+</body>
+</html>
