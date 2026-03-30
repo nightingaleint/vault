@@ -12,10 +12,10 @@
   --void:#020305;--obsidian:#060810;--steel:#0c1018;--steel2:#111620;--steel3:#181e2a;
   --border:#1e2535;--border2:#2a3548;
   --gold:#b8960c;--gold2:#d4af37;--gold3:#f0d060;
-  --cold:#4a90b8;--cold2:#6ab4d8;
+  --cold:#6ab4d8;--cold2:#90cce8;
   --btc:#f7931a;--btc2:#ffb347;
-  --danger:#c0392b;--safe:#27ae60;
-  --text:#c8d4e0;--muted:#4a5568;--bright:#e8f0f8;
+  --danger:#e05545;--safe:#3dbb78;
+  --text:#d8e8f4;--muted:#8a9ab8;--bright:#f0f6ff;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -64,9 +64,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,8,16,.96);
 .sdot-gold{background:var(--gold2);box-shadow:0 0 6px var(--gold2);animation:blink 2s ease infinite}
 .sdot-live{background:var(--safe);box-shadow:0 0 6px var(--safe);animation:blink 2s ease infinite}
 .nav-modules{display:flex;gap:4px}
-.nmod{padding:6px 14px;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border:1px solid transparent;border-radius:3px;cursor:pointer;transition:all .2s;background:none;font-family:inherit}
+.nmod{padding:6px 14px;font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text);border:1px solid transparent;border-radius:3px;cursor:pointer;transition:all .2s;background:none;font-family:inherit}
 .nmod:hover,.nmod.active{border-color:var(--border2);color:var(--gold2);background:rgba(184,150,12,.06)}
-.nav-clock{font-size:.6rem;color:var(--cold);letter-spacing:.1em}
+.nav-clock{font-size:.68rem;color:var(--cold);letter-spacing:.1em}
 
 /* ── LAYOUT ── */
 #app{padding-top:80px;display:grid;grid-template-columns:240px 1fr;min-height:100vh}
@@ -74,8 +74,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,8,16,.96);
 /* ── SIDEBAR ── */
 #sidebar{background:var(--obsidian);border-right:1px solid var(--border);padding:24px 0;position:sticky;top:80px;height:calc(100vh - 80px);overflow-y:auto}
 .sb-section{padding:0 16px;margin-bottom:8px}
-.sb-section-label{font-size:.5rem;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);padding:8px 8px;margin-bottom:4px;border-bottom:1px solid var(--border)}
-.sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:4px;margin-bottom:2px;cursor:pointer;transition:all .15s;font-size:.68rem;letter-spacing:.06em;color:var(--muted);border:1px solid transparent}
+.sb-section-label{font-size:.62rem;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);padding:8px 8px;margin-bottom:4px;border-bottom:1px solid var(--border)}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:4px;margin-bottom:2px;cursor:pointer;transition:all .15s;font-size:.76rem;letter-spacing:.06em;color:var(--text);border:1px solid transparent}
 .sb-item:hover{color:var(--text);background:rgba(255,255,255,.03);border-color:var(--border)}
 .sb-item.active{color:var(--gold2);background:rgba(184,150,12,.06);border-color:rgba(184,150,12,.2)}
 .sb-icon{font-size:1rem;width:20px;text-align:center}
@@ -94,16 +94,16 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,8,16,.96);
 
 /* ── PAGE HEADER ── */
 .page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border)}
-.ph-eyebrow{font-size:.55rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.ph-eyebrow{font-size:.66rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;display:flex;align-items:center;gap:8px}
 .ph-eyebrow::before{content:'>';color:var(--gold)}
 .ph-title{font-family:'Cinzel',serif;font-size:1.6rem;font-weight:700;color:var(--bright);letter-spacing:.06em;line-height:1.2}
-.ph-sub{font-size:.68rem;color:var(--muted);margin-top:6px;letter-spacing:.05em}
-.ph-meta{text-align:right;font-size:.58rem;color:var(--muted);line-height:2}
+.ph-sub{font-size:.78rem;color:var(--text);margin-top:6px;letter-spacing:.05em}
+.ph-meta{text-align:right;font-size:.66rem;color:var(--text);line-height:2}
 
 /* ── CARDS ── */
 .card{background:var(--steel);border:1px solid var(--border);border-radius:6px;padding:20px;position:relative;overflow:hidden}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}
-.card-title{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
 .card-badge{font-size:.52rem;padding:2px 8px;border-radius:2px;background:rgba(74,144,184,.1);border:1px solid rgba(74,144,184,.2);color:var(--cold2)}
 .card-badge.live{background:rgba(39,174,96,.1);border-color:rgba(39,174,96,.2);color:var(--safe)}
 
@@ -112,7 +112,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,8,16,.96);
 .stat-card{background:var(--steel2);border:1px solid var(--border);border-radius:6px;padding:16px;position:relative}
 .stat-card::after{content:'';position:absolute;top:0;left:0;width:3px;height:100%;border-radius:3px 0 0 3px}
 .sc-gold::after{background:var(--gold)}.sc-btc::after{background:var(--btc)}.sc-cold::after{background:var(--cold)}.sc-safe::after{background:var(--safe)}
-.stat-label{font-size:.52rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.stat-label{font-size:.64rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
 .stat-val{font-family:'Cinzel',serif;font-size:1.5rem;color:var(--bright);line-height:1;transition:all .5s}
 .stat-delta{font-size:.6rem;margin-top:4px;transition:all .3s}
 .delta-up{color:var(--safe)}.delta-dn{color:var(--danger)}.delta-neu{color:var(--muted)}
@@ -129,9 +129,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,8,16,.96);
 .chart-wrap-lg{height:240px;position:relative}
 
 /* ── TABLE ── */
-.vault-table{width:100%;border-collapse:collapse;font-size:.68rem}
-.vault-table th{text-align:left;padding:8px 12px;font-size:.52rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
-.vault-table td{padding:10px 12px;border-bottom:1px solid rgba(30,37,53,.8);transition:color .3s}
+.vault-table{width:100%;border-collapse:collapse;font-size:.78rem}
+.vault-table th{text-align:left;padding:8px 12px;font-size:.64rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text);border-bottom:1px solid var(--border)}
+.vault-table td{padding:10px 12px;border-bottom:1px solid rgba(30,37,53,.8);transition:color .3s;color:var(--text)}
 .vault-table tr:hover td{background:rgba(255,255,255,.02)}
 .vault-table tr:last-child td{border:none}
 
@@ -139,7 +139,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,8,16,.96);
 .ticker-bar{background:var(--steel);border:1px solid var(--border);border-radius:4px;padding:10px 16px;margin-bottom:16px;display:flex;gap:24px;overflow-x:auto;scrollbar-width:none}
 .ticker-bar::-webkit-scrollbar{display:none}
 .ticker-item{display:flex;align-items:center;gap:8px;white-space:nowrap;flex-shrink:0}
-.ti-name{font-size:.6rem;color:var(--muted);letter-spacing:.08em}
+.ti-name{font-size:.7rem;color:var(--text);letter-spacing:.08em}
 .ti-val{font-size:.72rem;font-weight:500;color:var(--bright);transition:color .3s}
 .ti-chg{font-size:.6rem;transition:color .3s}
 
@@ -250,7 +250,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,8,16,.96);
     <button class="nmod" onclick="showView('btc',this)">Bitcoin</button>
     <button class="nmod" onclick="showView('macro',this)">Macro</button>
     <button class="nmod" onclick="showView('countries',this)">Countries</button>
-    <button class="nmod" onclick="showView('docs',this)">Vault</button>
+    <button class="nmod" onclick="showView('affiliates',this)">Resources</button>
   </div>
   <div class="nav-status">
     <div class="status-chip"><div class="sdot sdot-live" id="live-dot"></div><span id="live-label">CONNECTING</span></div>
@@ -274,7 +274,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,8,16,.96);
     </div>
     <div class="sb-section">
       <div class="sb-section-label">Personal Vault</div>
-      <div class="sb-item" onclick="showView('docs',null)"><div class="sb-icon">⬡</div>Documents</div>
+      <div class="sb-item" onclick="showView('affiliates',null)"><div class="sb-icon">◈</div>Resources</div>
     </div>
     <div class="vault-meter">
       <div class="vm-label">Fear & Greed</div>
@@ -503,55 +503,107 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,8,16,.96);
       </div>
     </div>
 
-    <!-- ══ DOCS ══ -->
-    <div class="view" id="view-docs">
+    <!-- ══ AFFILIATES / RESOURCES ══ -->
+    <div class="view" id="view-affiliates">
       <div class="page-header">
         <div>
-          <div class="ph-eyebrow">Personal Fortress · Encrypted Storage</div>
-          <div class="ph-title">THE VAULT</div>
-          <div class="ph-sub">Your encrypted documents, IP, credentials and private files</div>
+          <div class="ph-eyebrow">Nightingale Vault · Curated Resources</div>
+          <div class="ph-title">RESOURCES</div>
+          <div class="ph-sub">Tools, platforms and services vetted for the financially independent. Affiliate links support free access to Vault.</div>
         </div>
-        <div class="ph-meta"><div style="color:var(--gold2)">AES-256-GCM</div></div>
+        <div class="ph-meta"><div style="color:var(--gold2)">Affiliate Disclosure</div><div style="font-size:.62rem;color:var(--text)">We earn commission at no cost to you</div></div>
       </div>
-      <div class="stat-row">
-        <div class="stat-card sc-gold"><div class="stat-label">Documents</div><div class="stat-val">12</div><div class="stat-delta" style="color:var(--gold)">All encrypted</div></div>
-        <div class="stat-card sc-cold"><div class="stat-label">Storage</div><div class="stat-val">4.2 GB</div><div class="stat-delta delta-neu">of 10 GB</div></div>
-        <div class="stat-card sc-safe"><div class="stat-label">Last Access</div><div class="stat-val">Today</div><div class="stat-delta delta-up">Verified</div></div>
-        <div class="stat-card sc-btc"><div class="stat-label">Backups</div><div class="stat-val">3</div><div class="stat-delta delta-up">All synced</div></div>
-      </div>
-      <div class="grid-2">
-        <div class="card">
-          <div class="card-title">Legal & Identity</div>
-          <div class="doc-item"><div class="doc-icon">🪪</div><div class="doc-info"><div class="doc-name">Passport & ID Documents<span class="doc-enc">ENC</span></div><div class="doc-meta">Updated Jan 2026 · 4 files · 12.4 MB</div></div><div class="doc-lock">🔒</div></div>
-          <div class="doc-item"><div class="doc-icon">📜</div><div class="doc-info"><div class="doc-name">Company Registration — Nightingale Intelligence<span class="doc-enc">ENC</span></div><div class="doc-meta">Registered 2024 · 3 files · 8.2 MB</div></div><div class="doc-lock">🔒</div></div>
-          <div class="doc-item"><div class="doc-icon">⚖️</div><div class="doc-info"><div class="doc-name">IP & Trademark Registrations<span class="doc-enc">ENC</span></div><div class="doc-meta">5 trademarks · Nightingale ecosystem</div></div><div class="doc-lock">🔒</div></div>
-          <div class="doc-item"><div class="doc-icon">🏠</div><div class="doc-info"><div class="doc-name">Property Deeds & Leases<span class="doc-enc">ENC</span></div><div class="doc-meta">Updated Dec 2025</div></div><div class="doc-lock">🔒</div></div>
-        </div>
-        <div class="card">
-          <div class="card-title">Financial Records</div>
-          <div class="doc-item"><div class="doc-icon">📊</div><div class="doc-info"><div class="doc-name">Tax Returns 2022–2025<span class="doc-enc">ENC</span></div><div class="doc-meta">4 years · HMRC · 18.4 MB</div></div><div class="doc-lock">🔒</div></div>
-          <div class="doc-item"><div class="doc-icon">🏦</div><div class="doc-info"><div class="doc-name">Bank Account Records<span class="doc-enc">ENC</span></div><div class="doc-meta">3 accounts · 24 months statements</div></div><div class="doc-lock">🔒</div></div>
-          <div class="doc-item"><div class="doc-icon">₿</div><div class="doc-info"><div class="doc-name">Crypto Wallet Seeds & Records<span class="doc-enc">ENC</span></div><div class="doc-meta">Hardware wallet backup · Never cloud-synced</div></div><div class="doc-lock">🔒</div></div>
-          <div class="doc-item"><div class="doc-icon">📈</div><div class="doc-info"><div class="doc-name">Investment Portfolio Statements<span class="doc-enc">ENC</span></div><div class="doc-meta">Stocks · Bonds · Real estate · Q4 2025</div></div><div class="doc-lock">🔒</div></div>
-        </div>
-        <div class="card">
-          <div class="card-title">Creative IP & Media</div>
-          <div class="doc-item"><div class="doc-icon">🐦</div><div class="doc-info"><div class="doc-name">Nightingale Brand Assets<span class="doc-enc">ENC</span></div><div class="doc-meta">Logos · Fonts · Style guides · 1.2 GB</div></div><div class="doc-lock">🔒</div></div>
-          <div class="doc-item"><div class="doc-icon">🏗️</div><div class="doc-info"><div class="doc-name">Architecture Design Files<span class="doc-enc">ENC</span></div><div class="doc-meta">OpenSCAD · Grasshopper · G-code · 2.1 GB</div></div><div class="doc-lock">🔒</div></div>
-        </div>
-        <div class="card">
-          <div class="card-title">Credentials & Access</div>
-          <div style="padding:14px;background:var(--steel2);border:1px solid rgba(184,150,12,.3);border-radius:4px;margin-bottom:8px;font-size:.68rem;line-height:1.8">
-            <div style="color:var(--gold);font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:6px">ULTRA-SECURE ZONE</div>
-            Credentials stored with zero-knowledge encryption. Not even Nightingale Vault servers can read these. Master password required for decryption.
-          </div>
-          <div class="doc-item"><div class="doc-icon">🔐</div><div class="doc-info"><div class="doc-name">Password Vault (128 entries)<span class="doc-enc">ENC</span></div><div class="doc-meta">Zero-knowledge · Local decrypt only</div></div><div class="doc-lock">🔒</div></div>
-          <div class="doc-item"><div class="doc-icon">🗝️</div><div class="doc-info"><div class="doc-name">2FA Recovery Codes<span class="doc-enc">ENC</span></div><div class="doc-meta">24 services · Never transmitted</div></div><div class="doc-lock">🔒</div></div>
-        </div>
-      </div>
-    </div>
 
-  </div><!-- /main -->
+      <!-- Affiliate disclosure banner -->
+      <div style="padding:12px 16px;background:rgba(184,150,12,.06);border:1px solid rgba(184,150,12,.22);border-radius:4px;margin-bottom:20px;font-size:.72rem;color:var(--text);line-height:1.7">
+        <span style="color:var(--gold2);font-weight:700;letter-spacing:.08em">DISCLOSURE —</span> Nightingale Vault earns a small commission when you sign up or purchase through the links below. This keeps the intelligence platform free. We only list tools we would use ourselves.
+      </div>
+
+      <!-- ── PLACEHOLDER GRID — replace href="#" with real affiliate links ── -->
+      <div class="grid-3" style="margin-bottom:20px">
+
+        <!-- PLACEHOLDER 1 -->
+        <div class="card" style="cursor:pointer" onclick="window.open('#','_blank')">
+          <div class="card-title">Broker / Exchange <span class="card-badge">AFFILIATE PLACEHOLDER</span></div>
+          <div style="font-size:2rem;margin-bottom:10px">₿</div>
+          <div style="font-size:.82rem;color:var(--text);line-height:1.7;margin-bottom:12px">
+            <strong style="color:var(--bright)">[Exchange Name]</strong><br>
+            Replace this card with your preferred crypto exchange affiliate. Describe the key benefit in one line.
+          </div>
+          <div style="font-size:.64rem;color:var(--muted)">Commission: X% · Cookie: XX days</div>
+          <a href="#" style="display:block;margin-top:12px;padding:8px 14px;background:rgba(184,150,12,.1);border:1px solid rgba(184,150,12,.3);border-radius:3px;text-align:center;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold2);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(184,150,12,.2)'" onmouseout="this.style.background='rgba(184,150,12,.1)'">Open Account →</a>
+        </div>
+
+        <!-- PLACEHOLDER 2 -->
+        <div class="card" style="cursor:pointer" onclick="window.open('#','_blank')">
+          <div class="card-title">Wealth / Investing <span class="card-badge">AFFILIATE PLACEHOLDER</span></div>
+          <div style="font-size:2rem;margin-bottom:10px">📈</div>
+          <div style="font-size:.82rem;color:var(--text);line-height:1.7;margin-bottom:12px">
+            <strong style="color:var(--bright)">[Investment Platform]</strong><br>
+            Stocks, ETFs, or bonds platform. Replace with your affiliate link and a one-line value prop.
+          </div>
+          <div style="font-size:.64rem;color:var(--muted)">Commission: X% · Cookie: XX days</div>
+          <a href="#" style="display:block;margin-top:12px;padding:8px 14px;background:rgba(184,150,12,.1);border:1px solid rgba(184,150,12,.3);border-radius:3px;text-align:center;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold2);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(184,150,12,.2)'" onmouseout="this.style.background='rgba(184,150,12,.1)'">Start Investing →</a>
+        </div>
+
+        <!-- PLACEHOLDER 3 -->
+        <div class="card" style="cursor:pointer" onclick="window.open('#','_blank')">
+          <div class="card-title">FX / Transfers <span class="card-badge">AFFILIATE PLACEHOLDER</span></div>
+          <div style="font-size:2rem;margin-bottom:10px">💱</div>
+          <div style="font-size:.82rem;color:var(--text);line-height:1.7;margin-bottom:12px">
+            <strong style="color:var(--bright)">[FX Platform]</strong><br>
+            Wise, Revolut, or similar. Best for international transfers and multi-currency accounts.
+          </div>
+          <div style="font-size:.64rem;color:var(--muted)">Commission: X per signup · Cookie: XX days</div>
+          <a href="#" style="display:block;margin-top:12px;padding:8px 14px;background:rgba(184,150,12,.1);border:1px solid rgba(184,150,12,.3);border-radius:3px;text-align:center;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold2);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(184,150,12,.2)'" onmouseout="this.style.background='rgba(184,150,12,.1)'">Open Account →</a>
+        </div>
+
+        <!-- PLACEHOLDER 4 -->
+        <div class="card" style="cursor:pointer" onclick="window.open('#','_blank')">
+          <div class="card-title">Privacy / Security <span class="card-badge">AFFILIATE PLACEHOLDER</span></div>
+          <div style="font-size:2rem;margin-bottom:10px">🔐</div>
+          <div style="font-size:.82rem;color:var(--text);line-height:1.7;margin-bottom:12px">
+            <strong style="color:var(--bright)">[VPN / Password Manager]</strong><br>
+            NordVPN, ProtonVPN, 1Password etc. Essential for anyone managing wealth online.
+          </div>
+          <div style="font-size:.64rem;color:var(--muted)">Commission: X% · Cookie: XX days</div>
+          <a href="#" style="display:block;margin-top:12px;padding:8px 14px;background:rgba(74,144,184,.08);border:1px solid rgba(74,144,184,.25);border-radius:3px;text-align:center;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cold2);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(74,144,184,.18)'" onmouseout="this.style.background='rgba(74,144,184,.08)'">Get Protected →</a>
+        </div>
+
+        <!-- PLACEHOLDER 5 -->
+        <div class="card" style="cursor:pointer" onclick="window.open('#','_blank')">
+          <div class="card-title">Books / Education <span class="card-badge">AFFILIATE PLACEHOLDER</span></div>
+          <div style="font-size:2rem;margin-bottom:10px">📚</div>
+          <div style="font-size:.82rem;color:var(--text);line-height:1.7;margin-bottom:12px">
+            <strong style="color:var(--bright)">[Reading List / Course]</strong><br>
+            Link to Amazon affiliate for recommended financial independence reading, or Gumroad course.
+          </div>
+          <div style="font-size:.64rem;color:var(--muted)">Amazon Associates or direct · Cookie: 24hr</div>
+          <a href="#" style="display:block;margin-top:12px;padding:8px 14px;background:rgba(184,150,12,.1);border:1px solid rgba(184,150,12,.3);border-radius:3px;text-align:center;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold2);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(184,150,12,.2)'" onmouseout="this.style.background='rgba(184,150,12,.1)'">View List →</a>
+        </div>
+
+        <!-- PLACEHOLDER 6 -->
+        <div class="card" style="cursor:pointer" onclick="window.open('#','_blank')">
+          <div class="card-title">Insurance / Protection <span class="card-badge">AFFILIATE PLACEHOLDER</span></div>
+          <div style="font-size:2rem;margin-bottom:10px">🛡️</div>
+          <div style="font-size:.82rem;color:var(--text);line-height:1.7;margin-bottom:12px">
+            <strong style="color:var(--bright)">[SafetyWing / Life Insurance]</strong><br>
+            Cross-promote SafetyWing nomad insurance or a relevant financial protection product here.
+          </div>
+          <div style="font-size:.64rem;color:var(--muted)">Commission: X% · Cookie: XX days</div>
+          <a href="#" style="display:block;margin-top:12px;padding:8px 14px;background:rgba(39,174,96,.08);border:1px solid rgba(39,174,96,.22);border-radius:3px;text-align:center;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--safe);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(39,174,96,.18)'" onmouseout="this.style.background='rgba(39,174,96,.08)'">Get Quote →</a>
+        </div>
+
+      </div>
+
+      <!-- Coming soon: personal vault -->
+      <div style="margin-top:8px;padding:24px;background:var(--steel);border:1px solid rgba(184,150,12,.18);border-radius:6px;text-align:center">
+        <div style="font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Coming Soon</div>
+        <div style="font-family:'Cinzel',serif;font-size:1.1rem;color:var(--bright);margin-bottom:8px">Personal Document Vault</div>
+        <div style="font-size:.78rem;color:var(--text);max-width:480px;margin:0 auto;line-height:1.8">Encrypted personal document storage, credential management and private file backup. AES-256-GCM. Zero-knowledge architecture. Not yet available to users — in development.</div>
+      </div>
+
+    </div><!-- /view-affiliates -->
 </div><!-- /app -->
 
 <script>
@@ -593,11 +645,11 @@ function setStatus(type, msg){
 }
 
 /* ── CHART DEFAULTS ── */
-Chart.defaults.color = '#4a5568';
+Chart.defaults.color = '#8a9ab8';
 Chart.defaults.borderColor = '#1e2535';
 Chart.defaults.font.family = "'Share Tech Mono',monospace";
-Chart.defaults.font.size = 10;
-const GOLD='#d4af37', COLD='#4a90b8', BTC='#f7931a', SAFE='#27ae60', DANGER='#c0392b', MUTED='#2a3548', COLD2='#6ab4d8';
+Chart.defaults.font.size = 12;
+const GOLD='#d4af37', COLD='#6ab4d8', BTC='#f7931a', SAFE='#3dbb78', DANGER='#e05545', MUTED='#2a3548', COLD2='#90cce8';
 
 /* ── CLOCK ── */
 function tick(){
