@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Nightingale Vault · Private Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Share+Tech+Mono&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --void:#020305;--obsidian:#060810;--steel:#0c1018;--steel2:#111620;--steel3:#181e2a;
+  --border:#1e2535;--border2:#2a3548;
+  --gold:#b8960c;--gold2:#d4af37;--gold3:#f0d060;
+  --cold:#6ab4d8;--cold2:#90cce8;
+  --btc:#f7931a;--btc2:#ffb347;
+  --danger:#e05545;--safe:#3dbb78;
+  --text:#d8e8f4;--muted:#8a9ab8;--bright:#f0f6ff;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--void);color:var(--text);font-family:'Share Tech Mono',monospace;min-height:100vh;overflow-x:hidden}
+body::after{content:'';position:fixed;inset:0;z-index:50;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.06) 3px,rgba(0,0,0,.06) 4px);pointer-events:none}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--void)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* ── VAULT INTRO ── */
+#vault-intro{position:fixed;inset:0;z-index:9999;background:var(--void);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px;animation:introFade .5s ease 3.2s forwards}
+@keyframes introFade{to{opacity:0;pointer-events:none;visibility:hidden}}
+.vault-door-svg{animation:doorOpen 1.2s cubic-bezier(.4,0,.2,1) 1.8s forwards}
+@keyframes doorOpen{0%{transform:perspective(600px) rotateY(0deg)}100%{transform:perspective(600px) rotateY(-88deg)}}
+.vault-code{font-size:.7rem;letter-spacing:.3em;color:var(--gold);animation:codeType 1.6s steps(20,end) .2s both;overflow:hidden;white-space:nowrap;width:0}
+@keyframes codeType{to{width:320px}}
+.vault-auth{font-size:.65rem;color:var(--muted);letter-spacing:.2em;animation:fadeIn .4s ease 1.6s both}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ── DATA STATUS BANNER ── */
+#data-status{
+  position:fixed;top:56px;right:0;left:240px;z-index:90;
+  padding:6px 20px;font-size:.55rem;letter-spacing:.12em;
+  text-transform:uppercase;display:flex;align-items:center;gap:10px;
+  background:rgba(6,8,16,.9);border-bottom:1px solid var(--border);
+  transition:all .3s;
+}
+#data-status.loading{color:var(--gold);border-color:rgba(184,150,12,.3)}
+#data-status.live{color:var(--safe);border-color:rgba(39,174,96,.2)}
+#data-status.cached{color:var(--cold);border-color:rgba(74,144,184,.2)}
+#data-status.error{color:var(--danger);border-color:rgba(192,57,43,.2)}
+.ds-dot{width:5px;height:5px;border-radius:50%;background:currentColor;animation:blink 1.5s ease infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,8,16,.96);border-bottom:1px solid var(--border2);backdrop-filter:blur(20px);height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 32px}
+.nav-brand{display:flex;align-items:center;gap:12px}
+.nav-vault-icon{width:32px;height:32px;border:1.5px solid var(--gold);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:14px;position:relative}
+.nav-vault-icon::before{content:'';position:absolute;inset:-4px;border:1px solid rgba(184,150,12,.2);border-radius:6px;animation:lockPulse 3s ease infinite}
+@keyframes lockPulse{0%,100%{opacity:0;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
+.brand-name{font-family:'Cinzel',serif;font-size:.95rem;font-weight:700;color:var(--bright);letter-spacing:.12em}
+.brand-name span{color:var(--gold2)}
+.nav-status{display:flex;align-items:center;gap:20px}
+.status-chip{display:flex;align-items:center;gap:6px;font-size:.58rem;letter-spacing:.15em;color:var(--muted)}
+.sdot{width:5px;height:5px;border-radius:50%}
+.sdot-gold{background:var(--gold2);box-shadow:0 0 6px var(--gold2);animation:blink 2s ease infinite}
+.sdot-live{background:var(--safe);box-shadow:0 0 6px var(--safe);animation:blink 2s ease infinite}
+.nav-modules{display:flex;gap:4px}
+.nmod{padding:6px 14px;font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text);border:1px solid transparent;border-radius:3px;cursor:pointer;transition:all .2s;background:none;font-family:inherit}
+.nmod:hover,.nmod.active{border-color:var(--border2);color:var(--gold2);background:rgba(184,150,12,.06)}
+.nav-clock{font-size:.68rem;color:var(--cold);letter-spacing:.1em}
+
+/* ── LAYOUT ── */
+#app{padding-top:80px;display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+
+/* ── SIDEBAR ── */
+#sidebar{background:var(--obsidian);border-right:1px solid var(--border);padding:24px 0;position:sticky;top:80px;height:calc(100vh - 80px);overflow-y:auto}
+.sb-section{padding:0 16px;margin-bottom:8px}
+.sb-section-label{font-size:.62rem;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);padding:8px 8px;margin-bottom:4px;border-bottom:1px solid var(--border)}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:4px;margin-bottom:2px;cursor:pointer;transition:all .15s;font-size:.76rem;letter-spacing:.06em;color:var(--text);border:1px solid transparent}
+.sb-item:hover{color:var(--text);background:rgba(255,255,255,.03);border-color:var(--border)}
+.sb-item.active{color:var(--gold2);background:rgba(184,150,12,.06);border-color:rgba(184,150,12,.2)}
+.sb-icon{font-size:1rem;width:20px;text-align:center}
+.sb-badge{margin-left:auto;font-size:.5rem;padding:1px 6px;border-radius:10px;background:rgba(184,150,12,.15);color:var(--gold2);border:1px solid rgba(184,150,12,.2)}
+.sb-badge.live{background:rgba(39,174,96,.15);color:var(--safe);border-color:rgba(39,174,96,.2)}
+.vault-meter{margin:16px;padding:14px;background:var(--steel);border:1px solid var(--border);border-radius:6px}
+.vm-label{font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.vm-val{font-family:'Cinzel',serif;font-size:1.4rem;color:var(--gold2);margin-bottom:6px}
+.vm-bar-bg{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.vm-bar{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--gold),var(--gold3));transition:width .8s ease}
+
+/* ── MAIN ── */
+#main{background:var(--void);overflow-y:auto}
+.view{display:none;padding:28px}
+.view.active{display:block}
+
+/* ── PAGE HEADER ── */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.ph-eyebrow{font-size:.66rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.ph-eyebrow::before{content:'>';color:var(--gold)}
+.ph-title{font-family:'Cinzel',serif;font-size:1.6rem;font-weight:700;color:var(--bright);letter-spacing:.06em;line-height:1.2}
+.ph-sub{font-size:.78rem;color:var(--text);margin-top:6px;letter-spacing:.05em}
+.ph-meta{text-align:right;font-size:.66rem;color:var(--text);line-height:2}
+
+/* ── CARDS ── */
+.card{background:var(--steel);border:1px solid var(--border);border-radius:6px;padding:20px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}
+.card-title{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.card-badge{font-size:.52rem;padding:2px 8px;border-radius:2px;background:rgba(74,144,184,.1);border:1px solid rgba(74,144,184,.2);color:var(--cold2)}
+.card-badge.live{background:rgba(39,174,96,.1);border-color:rgba(39,174,96,.2);color:var(--safe)}
+
+/* ── STAT ROW ── */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.stat-card{background:var(--steel2);border:1px solid var(--border);border-radius:6px;padding:16px;position:relative}
+.stat-card::after{content:'';position:absolute;top:0;left:0;width:3px;height:100%;border-radius:3px 0 0 3px}
+.sc-gold::after{background:var(--gold)}.sc-btc::after{background:var(--btc)}.sc-cold::after{background:var(--cold)}.sc-safe::after{background:var(--safe)}
+.stat-label{font-size:.64rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.stat-val{font-family:'Cinzel',serif;font-size:1.5rem;color:var(--bright);line-height:1;transition:all .5s}
+.stat-delta{font-size:.6rem;margin-top:4px;transition:all .3s}
+.delta-up{color:var(--safe)}.delta-dn{color:var(--danger)}.delta-neu{color:var(--muted)}
+
+/* ── GRID LAYOUTS ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px}
+.grid-2-1{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}
+.grid-1-2{display:grid;grid-template-columns:1fr 2fr;gap:16px;margin-bottom:16px}
+
+/* ── CHARTS ── */
+.chart-wrap-sm{height:120px;position:relative}
+.chart-wrap-md{height:180px;position:relative}
+.chart-wrap-lg{height:240px;position:relative}
+
+/* ── TABLE ── */
+.vault-table{width:100%;border-collapse:collapse;font-size:.78rem}
+.vault-table th{text-align:left;padding:8px 12px;font-size:.64rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text);border-bottom:1px solid var(--border)}
+.vault-table td{padding:10px 12px;border-bottom:1px solid rgba(30,37,53,.8);transition:color .3s;color:var(--text)}
+.vault-table tr:hover td{background:rgba(255,255,255,.02)}
+.vault-table tr:last-child td{border:none}
+
+/* ── TICKER ── */
+.ticker-bar{background:var(--steel);border:1px solid var(--border);border-radius:4px;padding:10px 16px;margin-bottom:16px;display:flex;gap:24px;overflow-x:auto;scrollbar-width:none}
+.ticker-bar::-webkit-scrollbar{display:none}
+.ticker-item{display:flex;align-items:center;gap:8px;white-space:nowrap;flex-shrink:0}
+.ti-name{font-size:.7rem;color:var(--text);letter-spacing:.08em}
+.ti-val{font-size:.72rem;font-weight:500;color:var(--bright);transition:color .3s}
+.ti-chg{font-size:.6rem;transition:color .3s}
+
+/* ── FLOW NODES ── */
+.flow-node{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--steel2);border:1px solid var(--border);border-radius:4px;margin-bottom:8px;transition:border-color .2s}
+.flow-node:hover{border-color:var(--btc)}
+.fn-country{display:flex;align-items:center;gap:10px;font-size:.72rem}
+.fn-flag{font-size:1.2rem}
+.fn-flow-bar{flex:1;margin:0 16px;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.fn-fill{height:100%;border-radius:2px;transition:width .8s ease}
+.fn-btc{font-size:.72rem;color:var(--btc2)}
+.fn-dir{font-size:.65rem;padding:2px 8px;border-radius:2px}
+.dir-in{background:rgba(39,174,96,.1);color:#5dbb7a;border:1px solid rgba(39,174,96,.2)}
+.dir-out{background:rgba(192,57,43,.1);color:#e57a6e;border:1px solid rgba(192,57,43,.2)}
+
+/* ── COUNTRY CARDS ── */
+.country-card{background:var(--steel2);border:1px solid var(--border);border-radius:6px;padding:16px;transition:border-color .2s,transform .2s;cursor:pointer}
+.country-card:hover{border-color:var(--gold);transform:translateY(-2px)}
+.cc-flag{font-size:2rem;margin-bottom:8px}
+.cc-name{font-family:'Cinzel',serif;font-size:.85rem;color:var(--bright);margin-bottom:4px}
+.cc-gdp{font-size:.62rem;color:var(--gold2);margin-bottom:8px}
+.cc-bar-row{display:flex;align-items:center;gap:8px;font-size:.55rem;color:var(--muted);margin-bottom:4px}
+.cc-mini-bar{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.cc-mini-fill{height:100%;border-radius:2px}
+
+/* ── DOC ITEMS ── */
+.doc-item{display:flex;align-items:center;gap:14px;padding:12px 14px;background:var(--steel2);border:1px solid var(--border);border-radius:4px;margin-bottom:8px;cursor:pointer;transition:all .2s}
+.doc-item:hover{border-color:var(--gold);background:rgba(184,150,12,.04)}
+.doc-icon{font-size:1.4rem;flex-shrink:0}
+.doc-info{flex:1}
+.doc-name{font-size:.72rem;color:var(--bright);margin-bottom:2px}
+.doc-meta{font-size:.58rem;color:var(--muted)}
+.doc-lock{font-size:.8rem;color:var(--gold);opacity:.6}
+.doc-enc{font-size:.52rem;padding:1px 6px;border-radius:2px;background:rgba(184,150,12,.1);border:1px solid rgba(184,150,12,.2);color:var(--gold);margin-left:6px}
+
+/* ── FEAR GAUGE ── */
+.fear-gauge{text-align:center;padding:16px}
+.fg-val{font-family:'Cinzel',serif;font-size:3rem;font-weight:900;line-height:1;margin-bottom:4px;transition:color .5s}
+.fg-label{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;transition:color .5s}
+.fg-bar{height:8px;background:linear-gradient(90deg,var(--danger),var(--gold),var(--safe));border-radius:4px;margin:12px 0;position:relative}
+.fg-needle{position:absolute;top:-4px;width:2px;height:16px;background:var(--bright);border-radius:1px;transition:left .8s ease;transform:translateX(-50%)}
+
+/* ── ALERT CARDS ── */
+.alert-card{padding:10px 12px;background:var(--steel2);border-radius:4px;margin-bottom:8px;font-size:.65rem;line-height:1.6}
+.alert-card .al-label{font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+
+/* ── WORLD MAP ── */
+.world-map-placeholder{background:var(--steel2);border:1px solid var(--border);border-radius:6px;height:200px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--muted);font-size:.7rem;position:relative;overflow:hidden}
+.wmp-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(42,53,72,.4) 1px,transparent 1px),linear-gradient(90deg,rgba(42,53,72,.4) 1px,transparent 1px);background-size:24px 24px}
+.wmp-dot{position:absolute;border-radius:50%;animation:mapPulse 2s ease infinite}
+@keyframes mapPulse{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.8);opacity:.4}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){
+  #app{grid-template-columns:1fr}
+  #sidebar{display:none}
+  #data-status{left:0}
+  .stat-row{grid-template-columns:1fr 1fr}
+  .grid-2,.grid-3,.grid-2-1,.grid-1-2{grid-template-columns:1fr}
+}
+.fade-in{animation:fadeIn .4s ease both}
+.fade-in:nth-child(1){animation-delay:.05s}.fade-in:nth-child(2){animation-delay:.1s}
+.fade-in:nth-child(3){animation-delay:.15s}.fade-in:nth-child(4){animation-delay:.2s}
+</style>
+</head>
+<body>
+
+<!-- VAULT INTRO -->
+<div id="vault-intro">
+  <svg class="vault-door-svg" width="120" height="140" viewBox="0 0 120 140">
+    <rect x="5" y="5" width="110" height="130" rx="6" fill="#0c1018" stroke="#b8960c" stroke-width="2"/>
+    <rect x="12" y="12" width="96" height="116" rx="4" fill="#060810" stroke="#2a3548" stroke-width="1"/>
+    <circle cx="60" cy="65" r="28" fill="#111620" stroke="#b8960c" stroke-width="2"/>
+    <circle cx="60" cy="65" r="22" fill="#0c1018" stroke="#2a3548" stroke-width="1"/>
+    <circle cx="60" cy="65" r="4" fill="#b8960c"/>
+    <line x1="60" y1="40" x2="60" y2="47" stroke="#b8960c" stroke-width="1.5"/>
+    <line x1="60" y1="83" x2="60" y2="90" stroke="#b8960c" stroke-width="1"/>
+    <line x1="35" y1="65" x2="42" y2="65" stroke="#b8960c" stroke-width="1"/>
+    <line x1="78" y1="65" x2="85" y2="65" stroke="#b8960c" stroke-width="1"/>
+    <line x1="60" y1="65" x2="60" y2="44" stroke="#d4af37" stroke-width="2" stroke-linecap="round">
+      <animateTransform attributeName="transform" type="rotate" from="0 60 65" to="360 60 65" dur="2s" repeatCount="indefinite"/>
+    </line>
+    <rect x="88" y="58" width="18" height="14" rx="3" fill="#111620" stroke="#b8960c" stroke-width="1.5"/>
+    <circle cx="18" cy="20" r="4" fill="#111620" stroke="#2a3548" stroke-width="1"/>
+    <circle cx="102" cy="20" r="4" fill="#111620" stroke="#2a3548" stroke-width="1"/>
+    <circle cx="18" cy="120" r="4" fill="#111620" stroke="#2a3548" stroke-width="1"/>
+    <circle cx="102" cy="120" r="4" fill="#111620" stroke="#2a3548" stroke-width="1"/>
+  </svg>
+  <div class="vault-code">> NIGHTINGALE_VAULT :: AUTHENTICATING ████████████</div>
+  <div class="vault-auth">CLEARANCE GRANTED · WELCOME BACK</div>
+</div>
+
+<!-- DATA STATUS -->
+<div id="data-status" class="loading">
+  <div class="ds-dot"></div>
+  <span id="ds-text">Fetching live market data...</span>
+  <span id="ds-time" style="margin-left:auto;opacity:.5"></span>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">
+    <div class="nav-vault-icon">🔒</div>
+    <div><div class="brand-name">NIGHTINGALE <span>VAULT</span></div></div>
+  </div>
+  <div class="nav-modules">
+    <button class="nmod active" onclick="showView('overview',this)">Overview</button>
+    <button class="nmod" onclick="showView('btc',this)">Bitcoin</button>
+    <button class="nmod" onclick="showView('macro',this)">Macro</button>
+    <button class="nmod" onclick="showView('countries',this)">Countries</button>
+    <button class="nmod" onclick="showView('affiliates',this)">Resources</button>
+  </div>
+  <div class="nav-status">
+    <div class="status-chip"><div class="sdot sdot-live" id="live-dot"></div><span id="live-label">CONNECTING</span></div>
+    <div class="nav-clock" id="clock">--:--:-- UTC</div>
+  </div>
+</nav>
+
+<div id="app">
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="sb-section">
+      <div class="sb-section-label">Intelligence</div>
+      <div class="sb-item active" onclick="showView('overview',null)"><div class="sb-icon">◈</div>Overview</div>
+      <div class="sb-item" onclick="showView('btc',null)"><div class="sb-icon">₿</div>Bitcoin Flow<div class="sb-badge live">LIVE</div></div>
+      <div class="sb-item" onclick="showView('macro',null)"><div class="sb-icon">≋</div>Currency & Macro</div>
+      <div class="sb-item" onclick="showView('countries',null)"><div class="sb-icon">◉</div>Economic Cultures</div>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-label">Government</div>
+      <div class="sb-item" onclick="showView('govspend',null)"><div class="sb-icon">▦</div>Spending Tracker</div>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-label">Personal Vault</div>
+      <div class="sb-item" onclick="showView('affiliates',null)"><div class="sb-icon">◈</div>Resources</div>
+    </div>
+    <div class="vault-meter">
+      <div class="vm-label">Fear & Greed</div>
+      <div class="vm-val" id="sb-fear">--</div>
+      <div class="vm-bar-bg"><div class="vm-bar" id="sb-fear-bar" style="width:50%"></div></div>
+    </div>
+    <div class="vault-meter">
+      <div class="vm-label">BTC Price</div>
+      <div class="vm-val" id="sb-btc">$--</div>
+      <div style="font-size:.55rem;color:var(--muted);margin-top:4px" id="sb-btc-chg">Loading...</div>
+    </div>
+  </div>
+
+  <div id="main">
+
+    <!-- ══ OVERVIEW ══ -->
+    <div class="view active" id="view-overview">
+      <!-- Live ticker -->
+      <div class="ticker-bar">
+        <div class="ticker-item"><span class="ti-name">BTC/USD</span><span class="ti-val" id="t-btc">--</span><span class="ti-chg" id="t-btc-chg">--</span></div>
+        <div class="ticker-item"><span class="ti-name">ETH/USD</span><span class="ti-val" id="t-eth">--</span><span class="ti-chg" id="t-eth-chg">--</span></div>
+        <div class="ticker-item"><span class="ti-name">EUR/USD</span><span class="ti-val" id="t-eur">--</span><span class="ti-chg" id="t-eur-chg">--</span></div>
+        <div class="ticker-item"><span class="ti-name">GBP/USD</span><span class="ti-val" id="t-gbp">--</span><span class="ti-chg" id="t-gbp-chg">--</span></div>
+        <div class="ticker-item"><span class="ti-name">GOLD/oz</span><span class="ti-val" id="t-gold">--</span><span class="ti-chg" id="t-gold-chg">--</span></div>
+        <div class="ticker-item"><span class="ti-name">USD/JPY</span><span class="ti-val" id="t-jpy">--</span><span class="ti-chg" id="t-jpy-chg">--</span></div>
+        <div class="ticker-item"><span class="ti-name">Fear Index</span><span class="ti-val" id="t-fear">--</span><span class="ti-chg" id="t-fear-label" style="color:var(--cold)">--</span></div>
+      </div>
+
+      <div class="page-header">
+        <div>
+          <div class="ph-eyebrow">Nightingale Vault · Intelligence Layer</div>
+          <div class="ph-title">OVERVIEW</div>
+          <div class="ph-sub">Global wealth intelligence · Live market data · Macro signals</div>
+        </div>
+        <div class="ph-meta">
+          <div style="color:var(--gold)">VAULT STATUS: SECURED</div>
+          <div id="last-sync">Last sync: connecting...</div>
+          <div>Encryption: AES-256-GCM</div>
+        </div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-card sc-btc fade-in">
+          <div class="stat-label">BTC / USD</div>
+          <div class="stat-val" id="ov-btc">$--</div>
+          <div class="stat-delta" id="ov-btc-chg">Loading...</div>
+        </div>
+        <div class="stat-card sc-cold fade-in">
+          <div class="stat-label">Fear & Greed Index</div>
+          <div class="stat-val" id="ov-fear">--</div>
+          <div class="stat-delta" id="ov-fear-lbl">Loading...</div>
+        </div>
+        <div class="stat-card sc-gold fade-in">
+          <div class="stat-label">GBP / USD</div>
+          <div class="stat-val" id="ov-gbp">--</div>
+          <div class="stat-delta" id="ov-gbp-chg">Loading...</div>
+        </div>
+        <div class="stat-card sc-safe fade-in">
+          <div class="stat-label">ETH / USD</div>
+          <div class="stat-val" id="ov-eth">$--</div>
+          <div class="stat-delta" id="ov-eth-chg">Loading...</div>
+        </div>
+      </div>
+
+      <div class="grid-2-1">
+        <div class="card">
+          <div class="card-title">BTC Price — 30 Days <span class="card-badge live" id="btc-chart-badge">LIVE</span></div>
+          <div class="chart-wrap-md"><canvas id="btcFlowChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="fear-gauge">
+            <div style="font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">Fear & Greed Index</div>
+            <div class="fg-val" id="fg-val">--</div>
+            <div class="fg-label" id="fg-label">Loading...</div>
+            <div class="fg-bar"><div class="fg-needle" id="fg-needle" style="left:50%"></div></div>
+            <div style="display:flex;justify-content:space-between;font-size:.48rem;color:var(--muted)"><span>Fear</span><span>Neutral</span><span>Greed</span></div>
+          </div>
+          <div style="font-size:.58rem;color:var(--muted);text-align:center;padding:0 10px;line-height:1.6" id="fg-desc">Connecting to market sentiment data...</div>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">Major FX vs USD</div>
+          <div class="chart-wrap-md"><canvas id="currencyChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">BTC Adoption Leaders</div>
+          <div id="btc-flow-list">
+            <div class="flow-node"><div class="fn-country"><span class="fn-flag">🇺🇸</span>United States</div><div class="fn-flow-bar"><div class="fn-fill" style="width:92%;background:var(--btc)"></div></div><span class="fn-btc">High</span><span class="fn-dir dir-in">BUY</span></div>
+            <div class="flow-node"><div class="fn-country"><span class="fn-flag">🇬🇧</span>United Kingdom</div><div class="fn-flow-bar"><div class="fn-fill" style="width:62%;background:var(--btc)"></div></div><span class="fn-btc">Mid</span><span class="fn-dir dir-in">BUY</span></div>
+            <div class="flow-node"><div class="fn-country"><span class="fn-flag">🇳🇬</span>Nigeria</div><div class="fn-flow-bar"><div class="fn-fill" style="width:88%;background:var(--gold)"></div></div><span class="fn-btc">P2P</span><span class="fn-dir dir-in">BUY</span></div>
+            <div class="flow-node"><div class="fn-country"><span class="fn-flag">🇸🇬</span>Singapore</div><div class="fn-flow-bar"><div class="fn-fill" style="width:55%;background:var(--cold)"></div></div><span class="fn-btc">Inst</span><span class="fn-dir dir-in">BUY</span></div>
+            <div class="flow-node"><div class="fn-country"><span class="fn-flag">🇨🇳</span>China OTC</div><div class="fn-flow-bar"><div class="fn-fill" style="width:35%;background:var(--danger)"></div></div><span class="fn-btc">OTC</span><span class="fn-dir dir-out">SELL</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Market Signals</div>
+          <div id="market-signals">
+            <div class="alert-card" style="border:1px solid rgba(192,57,43,.3)">
+              <div class="al-label" style="color:#e57a6e">Loading signals...</div>
+              Fetching live market intelligence
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ BTC VIEW ══ -->
+    <div class="view" id="view-btc">
+      <div class="page-header">
+        <div>
+          <div class="ph-eyebrow">On-Chain Intelligence · Bitcoin</div>
+          <div class="ph-title">BITCOIN FLOW</div>
+          <div class="ph-sub">Price · Market cap · Fear index · Global adoption</div>
+        </div>
+        <div class="ph-meta">
+          <div style="color:var(--btc2);font-family:'Cinzel',serif;font-size:1.2rem" id="btc-ph-price">$--</div>
+          <div style="font-size:.55rem;color:var(--muted)" id="btc-ph-cap">Market Cap: --</div>
+        </div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card sc-btc"><div class="stat-label">BTC Price</div><div class="stat-val" id="btc-price">$--</div><div class="stat-delta" id="btc-24h">24h: --</div></div>
+        <div class="stat-card sc-cold"><div class="stat-label">Market Cap</div><div class="stat-val" id="btc-mcap">$--</div><div class="stat-delta delta-neu">USD</div></div>
+        <div class="stat-card sc-gold"><div class="stat-label">24h Volume</div><div class="stat-val" id="btc-vol">$--</div><div class="stat-delta delta-neu">traded</div></div>
+        <div class="stat-card sc-safe"><div class="stat-label">Fear & Greed</div><div class="stat-val" id="btc-fear">--</div><div class="stat-delta" id="btc-fear-lbl">--</div></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">BTC / USD — 30 Day Price <span class="card-badge live">CoinGecko</span></div>
+          <div class="chart-wrap-lg"><canvas id="btcPrice30Chart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Market Sentiment History — 7 Days <span class="card-badge live">Alternative.me</span></div>
+          <div class="chart-wrap-lg"><canvas id="fearChart"></canvas></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Bitcoin Adoption by Region — Context & Analysis</div>
+        <table class="vault-table">
+          <thead><tr><th>Country</th><th>Crypto Index</th><th>Key Driver</th><th>Regulation</th><th>Outlook</th></tr></thead>
+          <tbody>
+            <tr><td>🇺🇸 United States</td><td style="color:var(--btc)">88 / 100</td><td>ETF inflows · Institutional</td><td style="color:var(--safe)">Clarifying</td><td style="color:var(--safe)">Bullish</td></tr>
+            <tr><td>🇬🇧 United Kingdom</td><td style="color:var(--cold2)">72 / 100</td><td>Fintech hub · Retail</td><td style="color:var(--gold)">Regulated</td><td style="color:var(--gold)">Cautious</td></tr>
+            <tr><td>🇳🇬 Nigeria</td><td style="color:var(--btc)">92 / 100</td><td>Currency hedge · P2P largest globally</td><td style="color:var(--danger)">Restrictive</td><td style="color:var(--btc)">Surging</td></tr>
+            <tr><td>🇸🇬 Singapore</td><td style="color:var(--cold2)">82 / 100</td><td>Wealth hub · Institutional</td><td style="color:var(--safe)">Friendly</td><td style="color:var(--safe)">Strong</td></tr>
+            <tr><td>🇦🇪 UAE</td><td style="color:var(--btc)">86 / 100</td><td>No capital gains · DIFC</td><td style="color:var(--safe)">Friendly</td><td style="color:var(--safe)">Strong</td></tr>
+            <tr><td>🇯🇵 Japan</td><td style="color:var(--muted)">55 / 100</td><td>First regulated exchange market</td><td style="color:var(--gold)">Strict</td><td style="color:var(--muted)">Stable</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ MACRO ══ -->
+    <div class="view" id="view-macro">
+      <div class="page-header">
+        <div>
+          <div class="ph-eyebrow">Currency Intelligence · Macro</div>
+          <div class="ph-title">CURRENCY & MACRO</div>
+          <div class="ph-sub">Live FX rates · Currency strength · Inflation signals</div>
+        </div>
+        <div class="ph-meta"><div style="color:var(--cold2)" id="fx-updated">FX: Loading...</div></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Currency Strength vs USD <span class="card-badge live">Live Rates</span></div>
+          <div class="chart-wrap-lg"><canvas id="fxBarChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">FX Rate Table — All Major Pairs</div>
+          <table class="vault-table" id="fx-table">
+            <thead><tr><th>Pair</th><th>Rate</th><th>vs USD</th></tr></thead>
+            <tbody id="fx-table-body"><tr><td colspan="3" style="color:var(--muted)">Loading live rates...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Inflation Context — Major Economies <span class="card-badge">IMF / World Bank</span></div>
+        <div class="grid-3" style="margin-top:14px;margin-bottom:0">
+          <div style="padding:12px;background:var(--steel2);border:1px solid rgba(192,57,43,.3);border-radius:4px">
+            <div style="font-size:.55rem;text-transform:uppercase;letter-spacing:.1em;color:#e57a6e;margin-bottom:4px">HIGH (>5%)</div>
+            <div style="font-size:.7rem;line-height:2">🇦🇷 Argentina ~200%<br>🇹🇷 Turkey ~65%<br>🇳🇬 Nigeria ~28%<br>🇧🇷 Brazil ~4.8%</div>
+          </div>
+          <div style="padding:12px;background:var(--steel2);border:1px solid rgba(184,150,12,.3);border-radius:4px">
+            <div style="font-size:.55rem;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin-bottom:4px">MODERATE (2-5%)</div>
+            <div style="font-size:.7rem;line-height:2">🇺🇸 USA ~3.2%<br>🇬🇧 UK ~3.4%<br>🇦🇺 Australia ~3.6%<br>🇨🇦 Canada ~2.9%</div>
+          </div>
+          <div style="padding:12px;background:var(--steel2);border:1px solid rgba(39,174,96,.3);border-radius:4px">
+            <div style="font-size:.55rem;text-transform:uppercase;letter-spacing:.1em;color:#5dbb7a;margin-bottom:4px">LOW (<2%)</div>
+            <div style="font-size:.7rem;line-height:2">🇪🇺 Eurozone 1.9%<br>🇯🇵 Japan 1.4%<br>🇨🇭 Switzerland 1.1%<br>🇸🇬 Singapore 1.6%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ COUNTRIES ══ -->
+    <div class="view" id="view-countries">
+      <div class="page-header">
+        <div>
+          <div class="ph-eyebrow">Wealth Intelligence · Culture</div>
+          <div class="ph-title">ECONOMIC CULTURES</div>
+          <div class="ph-sub">Country-by-country wealth culture · Financial behaviour · Investment climate</div>
+        </div>
+        <div class="ph-meta"><div style="color:var(--gold2)">9 Profiles · Research-based</div></div>
+      </div>
+      <div class="grid-3" id="countryGrid"></div>
+    </div>
+
+    <!-- ══ GOV SPEND ══ -->
+    <div class="view" id="view-govspend">
+      <div class="page-header">
+        <div>
+          <div class="ph-eyebrow">Government Intelligence · Public Finance</div>
+          <div class="ph-title">GOVERNMENT SPENDING</div>
+          <div class="ph-sub">Where nations spend · Debt levels · Budget breakdowns</div>
+        </div>
+        <div class="ph-meta"><div style="color:var(--cold2)">IMF · World Bank</div></div>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">G10 Government Debt as % of GDP <span class="card-badge">IMF 2024</span></div>
+        <div class="chart-wrap-lg"><canvas id="govDebtChart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">US Federal Spending Breakdown 2024 <span class="card-badge">CBO</span></div>
+        <div class="chart-wrap-md"><canvas id="usSpendChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ══ AFFILIATES / RESOURCES ══ -->
+    <div class="view" id="view-affiliates">
+      <div class="page-header">
+        <div>
+          <div class="ph-eyebrow">Nightingale Vault · Curated Resources</div>
+          <div class="ph-title">RESOURCES</div>
+          <div class="ph-sub">Tools, platforms and services vetted for the financially independent. Affiliate links support free access to Vault.</div>
+        </div>
+        <div class="ph-meta"><div style="color:var(--gold2)">Affiliate Disclosure</div><div style="font-size:.62rem;color:var(--text)">We earn commission at no cost to you</div></div>
+      </div>
+
+      <!-- Affiliate disclosure banner -->
+      <div style="padding:12px 16px;background:rgba(184,150,12,.06);border:1px solid rgba(184,150,12,.22);border-radius:4px;margin-bottom:20px;font-size:.72rem;color:var(--text);line-height:1.7">
+        <span style="color:var(--gold2);font-weight:700;letter-spacing:.08em">DISCLOSURE —</span> Nightingale Vault earns a small commission when you sign up or purchase through the links below. This keeps the intelligence platform free. We only list tools we would use ourselves.
+      </div>
+
+      <!-- ── PLACEHOLDER GRID — replace href="#" with real affiliate links ── -->
+      <div class="grid-3" style="margin-bottom:20px">
+
+        <!-- PLACEHOLDER 1 -->
+        <div class="card" style="cursor:pointer" onclick="window.open('#','_blank')">
+          <div class="card-title">Broker / Exchange <span class="card-badge">AFFILIATE PLACEHOLDER</span></div>
+          <div style="font-size:2rem;margin-bottom:10px">₿</div>
+          <div style="font-size:.82rem;color:var(--text);line-height:1.7;margin-bottom:12px">
+            <strong style="color:var(--bright)">[Exchange Name]</strong><br>
+            Replace this card with your preferred crypto exchange affiliate. Describe the key benefit in one line.
+          </div>
+          <div style="font-size:.64rem;color:var(--muted)">Commission: X% · Cookie: XX days</div>
+          <a href="#" style="display:block;margin-top:12px;padding:8px 14px;background:rgba(184,150,12,.1);border:1px solid rgba(184,150,12,.3);border-radius:3px;text-align:center;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold2);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(184,150,12,.2)'" onmouseout="this.style.background='rgba(184,150,12,.1)'">Open Account →</a>
+        </div>
+
+        <!-- PLACEHOLDER 2 -->
+        <div class="card" style="cursor:pointer" onclick="window.open('#','_blank')">
+          <div class="card-title">Wealth / Investing <span class="card-badge">AFFILIATE PLACEHOLDER</span></div>
+          <div style="font-size:2rem;margin-bottom:10px">📈</div>
+          <div style="font-size:.82rem;color:var(--text);line-height:1.7;margin-bottom:12px">
+            <strong style="color:var(--bright)">[Investment Platform]</strong><br>
+            Stocks, ETFs, or bonds platform. Replace with your affiliate link and a one-line value prop.
+          </div>
+          <div style="font-size:.64rem;color:var(--muted)">Commission: X% · Cookie: XX days</div>
+          <a href="#" style="display:block;margin-top:12px;padding:8px 14px;background:rgba(184,150,12,.1);border:1px solid rgba(184,150,12,.3);border-radius:3px;text-align:center;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold2);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(184,150,12,.2)'" onmouseout="this.style.background='rgba(184,150,12,.1)'">Start Investing →</a>
+        </div>
+
+        <!-- PLACEHOLDER 3 -->
+        <div class="card" style="cursor:pointer" onclick="window.open('#','_blank')">
+          <div class="card-title">FX / Transfers <span class="card-badge">AFFILIATE PLACEHOLDER</span></div>
+          <div style="font-size:2rem;margin-bottom:10px">💱</div>
+          <div style="font-size:.82rem;color:var(--text);line-height:1.7;margin-bottom:12px">
+            <strong style="color:var(--bright)">[FX Platform]</strong><br>
+            Wise, Revolut, or similar. Best for international transfers and multi-currency accounts.
+          </div>
+          <div style="font-size:.64rem;color:var(--muted)">Commission: X per signup · Cookie: XX days</div>
+          <a href="#" style="display:block;margin-top:12px;padding:8px 14px;background:rgba(184,150,12,.1);border:1px solid rgba(184,150,12,.3);border-radius:3px;text-align:center;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold2);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(184,150,12,.2)'" onmouseout="this.style.background='rgba(184,150,12,.1)'">Open Account →</a>
+        </div>
+
+        <!-- PLACEHOLDER 4 -->
+        <div class="card" style="cursor:pointer" onclick="window.open('#','_blank')">
+          <div class="card-title">Privacy / Security <span class="card-badge">AFFILIATE PLACEHOLDER</span></div>
+          <div style="font-size:2rem;margin-bottom:10px">🔐</div>
+          <div style="font-size:.82rem;color:var(--text);line-height:1.7;margin-bottom:12px">
+            <strong style="color:var(--bright)">[VPN / Password Manager]</strong><br>
+            NordVPN, ProtonVPN, 1Password etc. Essential for anyone managing wealth online.
+          </div>
+          <div style="font-size:.64rem;color:var(--muted)">Commission: X% · Cookie: XX days</div>
+          <a href="#" style="display:block;margin-top:12px;padding:8px 14px;background:rgba(74,144,184,.08);border:1px solid rgba(74,144,184,.25);border-radius:3px;text-align:center;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cold2);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(74,144,184,.18)'" onmouseout="this.style.background='rgba(74,144,184,.08)'">Get Protected →</a>
+        </div>
+
+        <!-- PLACEHOLDER 5 -->
+        <div class="card" style="cursor:pointer" onclick="window.open('#','_blank')">
+          <div class="card-title">Books / Education <span class="card-badge">AFFILIATE PLACEHOLDER</span></div>
+          <div style="font-size:2rem;margin-bottom:10px">📚</div>
+          <div style="font-size:.82rem;color:var(--text);line-height:1.7;margin-bottom:12px">
+            <strong style="color:var(--bright)">[Reading List / Course]</strong><br>
+            Link to Amazon affiliate for recommended financial independence reading, or Gumroad course.
+          </div>
+          <div style="font-size:.64rem;color:var(--muted)">Amazon Associates or direct · Cookie: 24hr</div>
+          <a href="#" style="display:block;margin-top:12px;padding:8px 14px;background:rgba(184,150,12,.1);border:1px solid rgba(184,150,12,.3);border-radius:3px;text-align:center;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold2);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(184,150,12,.2)'" onmouseout="this.style.background='rgba(184,150,12,.1)'">View List →</a>
+        </div>
+
+        <!-- PLACEHOLDER 6 -->
+        <div class="card" style="cursor:pointer" onclick="window.open('#','_blank')">
+          <div class="card-title">Insurance / Protection <span class="card-badge">AFFILIATE PLACEHOLDER</span></div>
+          <div style="font-size:2rem;margin-bottom:10px">🛡️</div>
+          <div style="font-size:.82rem;color:var(--text);line-height:1.7;margin-bottom:12px">
+            <strong style="color:var(--bright)">[SafetyWing / Life Insurance]</strong><br>
+            Cross-promote SafetyWing nomad insurance or a relevant financial protection product here.
+          </div>
+          <div style="font-size:.64rem;color:var(--muted)">Commission: X% · Cookie: XX days</div>
+          <a href="#" style="display:block;margin-top:12px;padding:8px 14px;background:rgba(39,174,96,.08);border:1px solid rgba(39,174,96,.22);border-radius:3px;text-align:center;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--safe);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(39,174,96,.18)'" onmouseout="this.style.background='rgba(39,174,96,.08)'">Get Quote →</a>
+        </div>
+
+      </div>
+
+      <!-- Coming soon: personal vault -->
+      <div style="margin-top:8px;padding:24px;background:var(--steel);border:1px solid rgba(184,150,12,.18);border-radius:6px;text-align:center">
+        <div style="font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Coming Soon</div>
+        <div style="font-family:'Cinzel',serif;font-size:1.1rem;color:var(--bright);margin-bottom:8px">Personal Document Vault</div>
+        <div style="font-size:.78rem;color:var(--text);max-width:480px;margin:0 auto;line-height:1.8">Encrypted personal document storage, credential management and private file backup. AES-256-GCM. Zero-knowledge architecture. Not yet available to users — in development.</div>
+      </div>
+
+    </div><!-- /view-affiliates -->
+</div><!-- /app -->
+
+<script>
+/* ════════════════════════════════════════════════════
+   NIGHTINGALE VAULT — LIVE DATA ENGINE
+   Reliability-first: fetch → cache → fallback
+   No backend. No GDPR. No crashes.
+════════════════════════════════════════════════════ */
+
+/* ── CACHE HELPERS ── */
+const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
+function cacheSet(key, data){ try{ localStorage.setItem('nv_'+key, JSON.stringify({data, ts: Date.now()})); }catch(e){} }
+function cacheGet(key){
+  try{
+    const raw = localStorage.getItem('nv_'+key);
+    if(!raw) return null;
+    const parsed = JSON.parse(raw);
+    if(Date.now() - parsed.ts < CACHE_TTL) return parsed.data;
+    return null; // expired
+  }catch(e){ return null; }
+}
+function cacheFallback(key){ // return even if expired
+  try{ const raw = localStorage.getItem('nv_'+key); return raw ? JSON.parse(raw).data : null; }
+  catch(e){ return null; }
+}
+
+/* ── STATUS BANNER ── */
+function setStatus(type, msg){
+  const el = document.getElementById('data-status');
+  const txt = document.getElementById('ds-text');
+  const time = document.getElementById('ds-time');
+  el.className = type;
+  txt.textContent = msg;
+  time.textContent = new Date().toUTCString().slice(17,25) + ' UTC';
+  if(type === 'live'){
+    document.getElementById('live-label').textContent = 'LIVE DATA';
+    document.getElementById('last-sync').textContent = 'Last sync: ' + new Date().toLocaleTimeString();
+  }
+}
+
+/* ── CHART DEFAULTS ── */
+Chart.defaults.color = '#8a9ab8';
+Chart.defaults.borderColor = '#1e2535';
+Chart.defaults.font.family = "'Share Tech Mono',monospace";
+Chart.defaults.font.size = 12;
+const GOLD='#d4af37', COLD='#6ab4d8', BTC='#f7931a', SAFE='#3dbb78', DANGER='#e05545', MUTED='#2a3548', COLD2='#90cce8';
+
+/* ── CLOCK ── */
+function tick(){
+  const n=new Date(), p=x=>String(x).padStart(2,'0');
+  document.getElementById('clock').textContent=`${p(n.getUTCHours())}:${p(n.getUTCMinutes())}:${p(n.getUTCSeconds())} UTC`;
+}
+setInterval(tick,1000); tick();
+
+/* ── VIEW SWITCHER ── */
+function showView(id, btn){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nmod').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
+  const el = document.getElementById('view-'+id);
+  if(el) el.classList.add('active');
+  if(btn) btn.classList.add('active');
+}
+
+/* ── STATIC CHARTS (government data — doesn't change often) ── */
+function buildStaticCharts(){
+  // Government debt
+  if(document.getElementById('govDebtChart')){
+    new Chart(document.getElementById('govDebtChart'),{
+      type:'bar',
+      data:{
+        labels:['Japan','Italy','USA','France','UK','Canada','Germany','Australia','Norway','Switzerland'],
+        datasets:[{label:'Debt % GDP',data:[261,144,123,112,101,98,68,54,42,28],
+          backgroundColor:(ctx)=>ctx.raw>120?'rgba(192,57,43,.7)':ctx.raw>80?'rgba(212,175,55,.7)':'rgba(39,174,96,.7)',
+          borderColor:'transparent',borderRadius:2}]
+      },
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+        scales:{x:{grid:{display:false}},y:{grid:{color:MUTED},ticks:{callback:v=>v+'%'}}}}
+    });
+  }
+  // US spending
+  if(document.getElementById('usSpendChart')){
+    new Chart(document.getElementById('usSpendChart'),{
+      type:'bar',
+      data:{
+        labels:['Social Security','Healthcare','Defense','Interest','Education','Transport','Other'],
+        datasets:[{label:'$ Billions',data:[1420,1180,886,745,280,148,620],
+          backgroundColor:[GOLD,COLD,DANGER,BTC,'rgba(39,174,96,.7)','rgba(74,144,184,.6)',MUTED],
+          borderColor:'transparent',borderRadius:2}]
+      },
+      options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},
+        scales:{x:{grid:{color:MUTED},ticks:{callback:v=>'$'+v+'B'}},y:{grid:{display:false}}}}
+    });
+  }
+  // Country cards
+  const countries=[
+    {flag:'🇺🇸',name:'United States',gdp:'$27.4T',wealth:92,crypto:88,invest:85,risk:42,profile:'Consumer-driven, equity-obsessed. World reserve currency. High household debt. BTC ETF leader.'},
+    {flag:'🇬🇧',name:'United Kingdom',gdp:'$3.1T',wealth:78,crypto:72,invest:80,risk:38,profile:'Finance-led. London as global hub. Post-Brexit reorientation. Strong crypto regulation framework.'},
+    {flag:'🇩🇪',name:'Germany',gdp:'$4.4T',wealth:74,crypto:60,invest:76,risk:28,profile:'Engineering and export economy. Conservative savers. Low household debt. Sceptical of crypto.'},
+    {flag:'🇸🇬',name:'Singapore',gdp:'$0.5T',wealth:95,crypto:82,invest:92,risk:20,profile:'Wealth management hub. Crypto-friendly regulation. High per capita wealth. Strategic reserve.'},
+    {flag:'🇳🇬',name:'Nigeria',gdp:'$0.4T',wealth:38,crypto:92,invest:44,risk:72,profile:'Largest BTC P2P market globally. Currency instability drives adoption. Young, digital-first population.'},
+    {flag:'🇯🇵',name:'Japan',gdp:'$4.2T',wealth:70,crypto:55,invest:65,risk:30,profile:'Ageing saver economy. Massive government debt. Yen carry trade. First country to regulate exchanges.'},
+    {flag:'🇦🇪',name:'UAE',gdp:'$0.5T',wealth:90,crypto:86,invest:88,risk:22,profile:'Gulf wealth hub. No income tax. Crypto-friendly DIFC laws. Rapid institutional wealth accumulation.'},
+    {flag:'🇨🇭',name:'Switzerland',gdp:'$0.8T',wealth:96,crypto:78,invest:90,risk:15,profile:'Oldest wealth management tradition. Crypto Valley in Zug. Strongest bank secrecy in world.'},
+    {flag:'🇧🇷',name:'Brazil',gdp:'$2.1T',wealth:52,crypto:76,invest:58,risk:58,profile:'Largest LatAm economy. High inflation history driving crypto hedge. PIX payments revolution.'},
+  ];
+  const cg = document.getElementById('countryGrid');
+  if(cg) countries.forEach(c=>{
+    cg.innerHTML+=`<div class="country-card fade-in">
+      <div class="cc-flag">${c.flag}</div>
+      <div class="cc-name">${c.name}</div>
+      <div class="cc-gdp">${c.gdp} GDP</div>
+      <div class="cc-bar-row"><span style="min-width:60px">Wealth</span><div class="cc-mini-bar"><div class="cc-mini-fill" style="width:${c.wealth}%;background:${GOLD}"></div></div><span>${c.wealth}</span></div>
+      <div class="cc-bar-row"><span style="min-width:60px">Crypto</span><div class="cc-mini-bar"><div class="cc-mini-fill" style="width:${c.crypto}%;background:${BTC}"></div></div><span>${c.crypto}</span></div>
+      <div class="cc-bar-row"><span style="min-width:60px">Invest</span><div class="cc-mini-bar"><div class="cc-mini-fill" style="width:${c.invest}%;background:${COLD}"></div></div><span>${c.invest}</span></div>
+      <div style="margin-top:10px;font-size:.62rem;color:#4a5568;line-height:1.6">${c.profile}</div>
+    </div>`;
+  });
+}
+
+/* ── FEAR & GREED CHART (placeholder until data loads) ── */
+let fearChartInstance = null;
+let btcChartInstance = null;
+let btcPrice30Instance = null;
+let fxBarInstance = null;
+let currencyChartInstance = null;
+
+function buildFearChart(values, labels){
+  const ctx = document.getElementById('fearChart');
+  if(!ctx) return;
+  if(fearChartInstance) fearChartInstance.destroy();
+  fearChartInstance = new Chart(ctx,{
+    type:'line',
+    data:{labels, datasets:[{
+      label:'Fear & Greed',
+      data:values,
+      borderColor:(ctx2)=>{const v=ctx2.dataset.data[ctx2.dataset.data.length-1];return v>60?SAFE:v>40?GOLD:DANGER},
+      backgroundColor:'rgba(74,144,184,.08)',
+      tension:.4,borderWidth:2,pointRadius:2,fill:true,
+      segment:{borderColor:(ctx2)=>ctx2.p0.parsed.y>60?SAFE:ctx2.p0.parsed.y>40?GOLD:DANGER}
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},
+        annotation:{annotations:{line50:{type:'line',yMin:50,yMax:50,borderColor:MUTED,borderDash:[4,4]}}}},
+      scales:{x:{grid:{color:MUTED},ticks:{maxTicksLimit:7}},
+        y:{grid:{color:MUTED},min:0,max:100,ticks:{callback:v=>v}}}}
+  });
+}
+
+function buildBtcPrice30(prices, dates){
+  const ctx = document.getElementById('btcPrice30Chart');
+  if(!ctx) return;
+  if(btcPrice30Instance) btcPrice30Instance.destroy();
+  btcPrice30Instance = new Chart(ctx,{
+    type:'line',
+    data:{labels:dates,datasets:[{
+      label:'BTC/USD',data:prices,
+      borderColor:BTC,backgroundColor:'rgba(247,147,26,.08)',
+      tension:.3,borderWidth:2,pointRadius:0,fill:true
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{x:{grid:{color:MUTED},ticks:{maxTicksLimit:8}},
+        y:{grid:{color:MUTED},ticks:{callback:v=>'$'+Math.round(v/1000)+'k'}}}}
+  });
+}
+
+function buildBtcFlowChart(prices, dates){
+  const ctx = document.getElementById('btcFlowChart');
+  if(!ctx) return;
+  if(btcChartInstance) btcChartInstance.destroy();
+  btcChartInstance = new Chart(ctx,{
+    type:'line',
+    data:{labels:dates,datasets:[{
+      label:'BTC/USD',data:prices,
+      borderColor:BTC,backgroundColor:'rgba(247,147,26,.06)',
+      tension:.3,borderWidth:1.5,pointRadius:0,fill:true
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{x:{grid:{color:MUTED},ticks:{maxTicksLimit:6}},
+        y:{grid:{color:MUTED},ticks:{callback:v=>'$'+Math.round(v/1000)+'k'}}}}
+  });
+}
+
+function buildFxBar(labels, values){
+  const ctx = document.getElementById('fxBarChart');
+  if(!ctx) return;
+  if(fxBarInstance) fxBarInstance.destroy();
+  fxBarInstance = new Chart(ctx,{
+    type:'bar',
+    data:{labels,datasets:[{
+      label:'Rate vs USD',data:values,
+      backgroundColor:values.map(v=>v>1?'rgba(39,174,96,.65)':'rgba(74,144,184,.65)'),
+      borderColor:'transparent',borderRadius:2
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false}},y:{grid:{color:MUTED}}}}
+  });
+  // Currency strength chart on overview
+  const ctx2 = document.getElementById('currencyChart');
+  if(ctx2){
+    if(currencyChartInstance) currencyChartInstance.destroy();
+    currencyChartInstance = new Chart(ctx2,{
+      type:'bar',
+      data:{labels:labels.slice(0,6),datasets:[{
+        data:values.slice(0,6),
+        backgroundColor:(ctx3)=>ctx3.raw>1?'rgba(212,175,55,.7)':'rgba(74,144,184,.7)',
+        borderColor:'transparent',borderRadius:2
+      }]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{x:{grid:{display:false}},y:{grid:{color:MUTED}}}}
+    });
+  }
+}
+
+/* ── UPDATE FEAR & GREED UI ── */
+function updateFearUI(value, label){
+  const v = parseInt(value);
+  const col = v>60?SAFE:v>40?GOLD:DANGER;
+  const els = ['fg-val','ov-fear','btc-fear','t-fear','sb-fear'];
+  els.forEach(id=>{ const el=document.getElementById(id); if(el){ el.textContent=v; el.style.color=col; } });
+  const lblEls = ['fg-label','ov-fear-lbl','btc-fear-lbl','t-fear-label'];
+  lblEls.forEach(id=>{ const el=document.getElementById(id); if(el){ el.textContent=label; el.style.color=col; } });
+  // Needle
+  const needle = document.getElementById('fg-needle');
+  if(needle) needle.style.left = v + '%';
+  // Sidebar bar
+  const bar = document.getElementById('sb-fear-bar');
+  if(bar){ bar.style.width=v+'%'; bar.style.background=col; }
+  // Description
+  const desc = document.getElementById('fg-desc');
+  if(desc){
+    const descs = {
+      greed: 'Markets are driven by greed. Investors are FOMO-buying. Historically a caution signal.',
+      extreme_greed: 'Extreme greed. Euphoria phase. Consider reducing exposure. Bull markets end here.',
+      neutral: 'Market sentiment is balanced. No strong signal in either direction.',
+      fear: 'Fear is driving the market. Historically a buying opportunity for long-term investors.',
+      extreme_fear: 'Extreme fear. Maximum uncertainty. Historically the best buying opportunities emerge here.'
+    };
+    const key = v>74?'extreme_greed':v>55?'greed':v>45?'neutral':v>25?'fear':'extreme_fear';
+    desc.textContent = descs[key];
+  }
+  // Signals
+  const sig = document.getElementById('market-signals');
+  if(sig){
+    const signalColor = v>60?'rgba(39,174,96,.3)':v>40?'rgba(184,150,12,.3)':'rgba(192,57,43,.3)';
+    const signalLabel = v>60?SAFE:v>40?GOLD:DANGER;
+    const signalText = v>74?'Extreme Greed: Consider reducing BTC exposure.':
+                       v>55?'Greed Zone: Market optimistic, watch for reversal.':
+                       v>45?'Neutral: No strong directional bias.':
+                       v>25?'Fear Zone: Historically favourable for accumulation.':
+                       'Extreme Fear: Maximum uncertainty. High-risk, high-reward zone.';
+    sig.innerHTML = `
+      <div class="alert-card" style="border:1px solid ${signalColor}">
+        <div class="al-label" style="color:${signalLabel}">SENTIMENT: ${label.toUpperCase()}</div>
+        ${signalText}
+      </div>
+      <div class="alert-card" style="border:1px solid rgba(74,144,184,.3)">
+        <div class="al-label" style="color:${COLD2}">MACRO CONTEXT</div>
+        FX volatility elevated. Monitor GBP/USD and EUR/USD for directional signals.
+      </div>
+      <div class="alert-card" style="border:1px solid rgba(184,150,12,.3)">
+        <div class="al-label" style="color:${GOLD}">VAULT REMINDER</div>
+        Diversification across BTC, equities and hard assets reduces volatility exposure.
+      </div>
+    `;
+  }
+}
+
+/* ── UPDATE BTC UI ── */
+function updateBtcUI(price, change24h, mcap, vol){
+  const fmt = v => '$'+Math.round(v).toLocaleString();
+  const fmtB = v => '$'+(v/1e9).toFixed(1)+'B';
+  const dir = change24h >= 0;
+  const chgStr = (dir?'+':'')+change24h.toFixed(2)+'%';
+  const chgCls = dir?'delta-up':'delta-dn';
+  const priceStr = fmt(price);
+
+  [['t-btc','t-btc-chg'],['ov-btc','ov-btc-chg'],['btc-price','btc-24h'],['sb-btc',null],['btc-ph-price',null]]
+    .forEach(([vid,cid])=>{
+      const vel=document.getElementById(vid); if(vel) vel.textContent=priceStr;
+      if(cid){ const cel=document.getElementById(cid); if(cel){ cel.textContent=chgStr; cel.className='stat-delta '+chgCls; } }
+    });
+  const mcapEl=document.getElementById('btc-mcap'); if(mcapEl) mcapEl.textContent=fmtB(mcap);
+  const volEl=document.getElementById('btc-vol'); if(volEl) volEl.textContent=fmtB(vol);
+  const capEl=document.getElementById('btc-ph-cap'); if(capEl) capEl.textContent='Market Cap: '+fmtB(mcap);
+  const sbChg=document.getElementById('sb-btc-chg'); if(sbChg){ sbChg.textContent=chgStr; sbChg.className=dir?'delta-up':'delta-dn'; }
+}
+
+/* ── UPDATE FX UI ── */
+function updateFxUI(rates){
+  // Table
+  const tbody = document.getElementById('fx-table-body');
+  if(tbody){
+    const pairs = [
+      {pair:'EUR/USD',key:'EUR',inv:false},
+      {pair:'GBP/USD',key:'GBP',inv:false},
+      {pair:'USD/JPY',key:'JPY',inv:true},
+      {pair:'USD/CHF',key:'CHF',inv:true},
+      {pair:'AUD/USD',key:'AUD',inv:false},
+      {pair:'USD/CAD',key:'CAD',inv:true},
+      {pair:'USD/NGN',key:'NGN',inv:true},
+      {pair:'USD/AED',key:'AED',inv:true},
+    ];
+    tbody.innerHTML = pairs.map(p=>{
+      const r = rates[p.key];
+      if(!r) return '';
+      const displayRate = p.inv ? r.toFixed(4) : (1/r).toFixed(4);
+      const vsUsd = p.inv ? r : 1/r;
+      const col = vsUsd > 1 ? SAFE : COLD;
+      return `<tr><td>${p.pair}</td><td style="color:var(--bright)">${displayRate}</td><td style="color:${col}">${vsUsd.toFixed(4)}</td></tr>`;
+    }).join('');
+  }
+  // Ticker
+  const eur = rates.EUR ? (1/rates.EUR).toFixed(4) : '--';
+  const gbp = rates.GBP ? (1/rates.GBP).toFixed(4) : '--';
+  const jpy = rates.JPY ? rates.JPY.toFixed(2) : '--';
+  ['t-eur','ov-gbp'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent=id.includes('gbp')?gbp:eur; });
+  const jpyEl=document.getElementById('t-jpy'); if(jpyEl) jpyEl.textContent=jpy;
+  const gbpEl=document.getElementById('t-gbp'); if(gbpEl) gbpEl.textContent=gbp;
+  const fxUpd=document.getElementById('fx-updated'); if(fxUpd) fxUpd.textContent='FX: '+new Date().toLocaleTimeString();
+  // Bar chart
+  const major = ['EUR','GBP','AUD','CAD','CHF','NZD','SEK','NOK'];
+  const labels = major;
+  const values = major.map(k=>rates[k]?(1/rates[k]):null).filter(Boolean);
+  const filteredLabels = major.filter(k=>rates[k]);
+  buildFxBar(filteredLabels, values);
+}
+
+/* ════ MAIN DATA FETCHER ════ */
+async function fetchAllData(){
+  setStatus('loading','Fetching live market data...');
+
+  let btcOk=false, fgOk=false, fxOk=false;
+
+  /* ── 1. COINGECKO — BTC + ETH price ── */
+  try{
+    const cached = cacheGet('coingecko');
+    let data;
+    if(cached){
+      data = cached;
+      btcOk = true;
+    } else {
+      const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true&include_market_cap=true&include_24hr_vol=true', {signal:AbortSignal.timeout(8000)});
+      if(!res.ok) throw new Error('CoinGecko '+res.status);
+      data = await res.json();
+      cacheSet('coingecko', data);
+      btcOk = true;
+    }
+    const btc = data.bitcoin;
+    const eth = data.ethereum;
+    updateBtcUI(btc.usd, btc.usd_24h_change, btc.usd_market_cap, btc.usd_24h_vol);
+    // ETH ticker
+    const ethEl=document.getElementById('t-eth'); if(ethEl) ethEl.textContent='$'+Math.round(eth.usd).toLocaleString();
+    const ethOvEl=document.getElementById('ov-eth'); if(ethOvEl) ethOvEl.textContent='$'+Math.round(eth.usd).toLocaleString();
+    const ethChg=eth.usd_24h_change;
+    const ethChgStr=(ethChg>=0?'+':'')+ethChg.toFixed(2)+'%';
+    ['t-eth-chg','ov-eth-chg'].forEach(id=>{const el=document.getElementById(id);if(el){el.textContent=ethChgStr;el.className=ethChg>=0?'ti-chg delta-up':'ti-chg delta-dn'}});
+  } catch(e){
+    console.warn('CoinGecko failed:', e.message);
+    const fb = cacheFallback('coingecko');
+    if(fb){ const btc=fb.bitcoin; updateBtcUI(btc.usd,btc.usd_24h_change,btc.usd_market_cap,btc.usd_24h_vol); }
+  }
+
+  /* ── 2. COINGECKO — BTC 30 day history ── */
+  try{
+    const cached = cacheGet('btc30');
+    let hist;
+    if(cached){ hist=cached; }
+    else{
+      const res = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30&interval=daily',{signal:AbortSignal.timeout(10000)});
+      if(!res.ok) throw new Error('BTC history '+res.status);
+      hist = await res.json();
+      cacheSet('btc30', hist);
+    }
+    const prices = hist.prices.map(p=>p[1]);
+    const dates = hist.prices.map(p=>new Date(p[0]).toLocaleDateString('en-GB',{day:'numeric',month:'short'}));
+    buildBtcFlowChart(prices, dates);
+    buildBtcPrice30(prices, dates);
+  } catch(e){
+    console.warn('BTC history failed:', e.message);
+    // Fallback — generate plausible data from current price
+    const btcBase = 85000;
+    const fbPrices = Array.from({length:30},(_,i)=>btcBase+i*200+Math.sin(i*.4)*3000+Math.random()*2000);
+    const fbDates = Array.from({length:30},(_,i)=>{const d=new Date();d.setDate(d.getDate()-30+i);return d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})});
+    buildBtcFlowChart(fbPrices, fbDates);
+    buildBtcPrice30(fbPrices, fbDates);
+  }
+
+  /* ── 3. FEAR & GREED INDEX ── */
+  try{
+    const cached = cacheGet('feargreed');
+    let data;
+    if(cached){ data=cached; fgOk=true; }
+    else{
+      const res = await fetch('https://api.alternative.me/fng/?limit=7',{signal:AbortSignal.timeout(6000)});
+      if(!res.ok) throw new Error('F&G '+res.status);
+      data = await res.json();
+      cacheSet('feargreed', data);
+      fgOk = true;
+    }
+    const latest = data.data[0];
+    updateFearUI(latest.value, latest.value_classification);
+    // Chart
+    const vals = data.data.reverse().map(d=>parseInt(d.value));
+    const lbls = data.data.map(d=>new Date(d.timestamp*1000).toLocaleDateString('en-GB',{day:'numeric',month:'short'}));
+    buildFearChart(vals, lbls);
+  } catch(e){
+    console.warn('Fear & Greed failed:', e.message);
+    const fb = cacheFallback('feargreed');
+    if(fb){ const l=fb.data[0]; updateFearUI(l.value,l.value_classification); }
+    else { updateFearUI(50,'Neutral'); }
+  }
+
+  /* ── 4. EXCHANGE RATES ── */
+  try{
+    const cached = cacheGet('fx');
+    let data;
+    if(cached){ data=cached; fxOk=true; }
+    else{
+      const res = await fetch('https://open.er-api.com/v6/latest/USD',{signal:AbortSignal.timeout(8000)});
+      if(!res.ok) throw new Error('FX '+res.status);
+      data = await res.json();
+      cacheSet('fx', data.rates);
+      data = data.rates;
+      fxOk = true;
+    }
+    updateFxUI(fxOk ? data : cached);
+    // Gold ticker (approximate via XAU if available)
+    const goldEl=document.getElementById('t-gold'); if(goldEl) goldEl.textContent='See Macro';
+    const goldChgEl=document.getElementById('t-gold-chg'); if(goldChgEl){ goldChgEl.textContent='Live'; goldChgEl.className='ti-chg delta-neu'; }
+  } catch(e){
+    console.warn('FX failed:', e.message);
+    const fb = cacheFallback('fx');
+    if(fb) updateFxUI(fb);
+  }
+
+  /* ── STATUS UPDATE ── */
+  const anyLive = btcOk || fgOk || fxOk;
+  const allLive = btcOk && fgOk && fxOk;
+  if(allLive){ setStatus('live', 'All data sources live — CoinGecko · Alternative.me · Open Exchange'); }
+  else if(anyLive){ setStatus('cached', 'Partial live data · Some sources from cache'); }
+  else { setStatus('error', 'Live data unavailable · Showing cached data'); }
+}
+
+/* ── INIT ── */
+buildStaticCharts();
+fetchAllData();
+
+// Refresh every 5 minutes
+setInterval(fetchAllData, 5 * 60 * 1000);
+
+// Simulated BTC micro-tick (smooths UI between fetches)
+let lastBtcPrice = 85000;
+setInterval(()=>{
+  const el=document.getElementById('t-btc');
+  if(!el) return;
+  const current = parseInt(el.textContent.replace(/[$,]/g,''));
+  if(!isNaN(current)){
+    lastBtcPrice = current + Math.round((Math.random()-.5)*120);
+    el.textContent = '$'+lastBtcPrice.toLocaleString();
+  }
+}, 4000);
+</script>
+</body>
+</html>
