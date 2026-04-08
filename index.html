@@ -250,7 +250,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,8,16,.96);
     <button class="nmod" onclick="showView('btc',this)">Bitcoin</button>
     <button class="nmod" onclick="showView('macro',this)">Macro</button>
     <button class="nmod" onclick="showView('countries',this)">Countries</button>
-    <button class="nmod" onclick="showView('affiliates',this)">Resources</button>
+    <button class="nmod" onclick="showView('dojo',this)">Dojo</button>
   </div>
   <div class="nav-status">
     <div class="status-chip"><div class="sdot sdot-live" id="live-dot"></div><span id="live-label">CONNECTING</span></div>
@@ -273,8 +273,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,8,16,.96);
       <div class="sb-item" onclick="showView('govspend',null)"><div class="sb-icon">▦</div>Spending Tracker</div>
     </div>
     <div class="sb-section">
-      <div class="sb-section-label">Personal Vault</div>
-      <div class="sb-item" onclick="showView('affiliates',null)"><div class="sb-icon">◈</div>Resources</div>
+      <div class="sb-section-label">Trading Vault</div>
+      <div class="sb-item" onclick="showView('affiliates',null)"><div class="sb-icon">◈</div>Dojo</div>
     </div>
     <div class="vault-meter">
       <div class="vm-label">Fear & Greed</div>
@@ -503,13 +503,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,8,16,.96);
       </div>
     </div>
 
-    <!-- ══ AFFILIATES / RESOURCES ══ -->
+    <!-- ══ AFFILIATES / Dojo ══ -->
     <div class="view" id="view-affiliates">
       <div class="page-header">
         <div>
-          <div class="ph-eyebrow">Nightingale Vault · Curated Resources</div>
-          <div class="ph-title">RESOURCES</div>
-          <div class="ph-sub">Tools, platforms and services vetted for the financially independent. Affiliate links support free access to Vault.</div>
+          <div class="ph-eyebrow">Nightingale Vault · Dojo</div>
+          <div class="ph-title">Dojo</div>
+          <div class="ph-sub">Tools, platforms and services to help you understand and navigate the world of macroeonomics better.</div>
         </div>
         <div class="ph-meta"><div style="color:var(--gold2)">Affiliate Disclosure</div><div style="font-size:.62rem;color:var(--text)">We earn commission at no cost to you</div></div>
       </div>
@@ -1043,6 +1043,30 @@ async function fetchAllData(){
     const fb = cacheFallback('fx');
     if(fb) updateFxUI(fb);
   }
+
+  async function analyzeDojo() {
+    const ticker = document.getElementById('dojo-ticker').value || 'BTC-USD';
+    const btn = document.querySelector('.dojo-btn');
+    btn.textContent = "CALCULATING...";
+
+    try {
+        // REPLACE THIS URL with your actual Render URL after deployment
+        const response = await fetch(`https://your-render-app-name.onrender.com/analyze?ticker=${ticker}`);
+        const result = await response.json();
+
+        if (result.error) {
+            alert("Ticker not found in Nightingale database.");
+        } else {
+            document.getElementById('dojo-prob-val').textContent = result.win_rate + "%";
+            document.getElementById('dojo-prob-desc').textContent = 
+                `Logic: ${ticker} closed green ${result.win_days} out of ${result.total_days} days.`;
+            document.getElementById('sim-price').textContent = "$" + result.current_price.toLocaleString();
+        }
+    } catch (e) {
+        console.error("Dojo Connection Error:", e);
+    } finally {
+        btn.textContent = "ANALYZE";
+    }
 
   /* ── STATUS UPDATE ── */
   const anyLive = btcOk || fgOk || fxOk;
