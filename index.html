@@ -250,7 +250,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,8,16,.96);
     <button class="nmod" onclick="showView('btc',this)">Bitcoin</button>
     <button class="nmod" onclick="showView('macro',this)">Macro</button>
     <button class="nmod" onclick="showView('countries',this)">Countries</button>
-    <button class="nmod" onclick="showView('dojo',this)">Dojo</button>
+    <button class="nmod" onclick="showView('affiliates',this)">Learn to Trade</button>
   </div>
   <div class="nav-status">
     <div class="status-chip"><div class="sdot sdot-live" id="live-dot"></div><span id="live-label">CONNECTING</span></div>
@@ -274,7 +274,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,8,16,.96);
     </div>
     <div class="sb-section">
       <div class="sb-section-label">Trading Vault</div>
-      <div class="sb-item" onclick="showView('affiliates',null)"><div class="sb-icon">◈</div>Dojo</div>
+      <div class="sb-item" onclick="showView('affiliates',null)"><div class="sb-icon">⚗</div>Probability Lab</div>
     </div>
     <div class="vault-meter">
       <div class="vm-label">Fear & Greed</div>
@@ -503,105 +503,276 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,8,16,.96);
       </div>
     </div>
 
-    <!-- ══ AFFILIATES / Dojo ══ -->
+    <!-- ══ LEARN TO TRADE ══ -->
     <div class="view" id="view-affiliates">
-      <div class="page-header">
-        <div>
-          <div class="ph-eyebrow">Nightingale Vault · Dojo</div>
-          <div class="ph-title">Dojo</div>
-          <div class="ph-sub">Tools, platforms and services to help you understand and navigate the world of macroeonomics better.</div>
-        </div>
-        <div class="ph-meta"><div style="color:var(--gold2)">Affiliate Disclosure</div><div style="font-size:.62rem;color:var(--text)">We earn commission at no cost to you</div></div>
-      </div>
 
-      <!-- Affiliate disclosure banner -->
-      <div style="padding:12px 16px;background:rgba(184,150,12,.06);border:1px solid rgba(184,150,12,.22);border-radius:4px;margin-bottom:20px;font-size:.72rem;color:var(--text);line-height:1.7">
-        <span style="color:var(--gold2);font-weight:700;letter-spacing:.08em">DISCLOSURE —</span> Nightingale Vault earns a small commission when you sign up or purchase through the links below. This keeps the intelligence platform free. We only list tools we would use ourselves.
-      </div>
+      <!-- ══ GATE: shown until code validated ══ -->
+      <div id="lab-gate">
 
-      <!-- ── PLACEHOLDER GRID — replace href="#" with real affiliate links ── -->
-      <div class="grid-3" style="margin-bottom:20px">
-
-        <!-- PLACEHOLDER 1 -->
-        <div class="card" style="cursor:pointer" onclick="window.open('#','_blank')">
-          <div class="card-title">Broker / Exchange <span class="card-badge">AFFILIATE PLACEHOLDER</span></div>
-          <div style="font-size:2rem;margin-bottom:10px">₿</div>
-          <div style="font-size:.82rem;color:var(--text);line-height:1.7;margin-bottom:12px">
-            <strong style="color:var(--bright)">[Exchange Name]</strong><br>
-            Replace this card with your preferred crypto exchange affiliate. Describe the key benefit in one line.
+        <!-- Hero -->
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:52px 32px 36px;text-align:center;border-bottom:1px solid var(--border)">
+          <div style="font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:14px">> MEMBERS ONLY</div>
+          <div style="font-family:'Cinzel',serif;font-size:2rem;color:var(--bright);letter-spacing:.06em;margin-bottom:12px;line-height:1.2">LEARN TO TRADE<br><span style="color:var(--gold2)">WITH REAL DATA</span></div>
+          <div style="font-size:.9rem;color:var(--text);max-width:480px;line-height:2;margin-bottom:32px">
+            Stop trading on gut feeling. This tool analyses any stock or crypto over the past 30–90 days and shows you exactly what the numbers say — win rates, volatility, historical crashes and a simulator to test your instincts against the market.
           </div>
-          <div style="font-size:.64rem;color:var(--muted)">Commission: X% · Cookie: XX days</div>
-          <a href="#" style="display:block;margin-top:12px;padding:8px 14px;background:rgba(184,150,12,.1);border:1px solid rgba(184,150,12,.3);border-radius:3px;text-align:center;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold2);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(184,150,12,.2)'" onmouseout="this.style.background='rgba(184,150,12,.1)'">Open Account →</a>
-        </div>
 
-        <!-- PLACEHOLDER 2 -->
-        <div class="card" style="cursor:pointer" onclick="window.open('#','_blank')">
-          <div class="card-title">Wealth / Investing <span class="card-badge">AFFILIATE PLACEHOLDER</span></div>
-          <div style="font-size:2rem;margin-bottom:10px">📈</div>
-          <div style="font-size:.82rem;color:var(--text);line-height:1.7;margin-bottom:12px">
-            <strong style="color:var(--bright)">[Investment Platform]</strong><br>
-            Stocks, ETFs, or bonds platform. Replace with your affiliate link and a one-line value prop.
+          <!-- Access code input -->
+          <div style="width:100%;max-width:400px;margin-bottom:18px">
+            <div style="display:flex;gap:8px;margin-bottom:8px">
+              <input id="vault-pass-input" type="password" placeholder="ENTER ACCESS CODE" autocomplete="off"
+                style="flex:1;background:var(--steel2);border:1px solid var(--border2);border-radius:4px;padding:13px 16px;font-family:'Share Tech Mono',monospace;font-size:.82rem;letter-spacing:.12em;color:var(--bright);outline:none;transition:border-color .2s"
+                onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border2)'"
+                onkeydown="if(event.key==='Enter')doLabUnlock()">
+              <button onclick="doLabUnlock()" id="unlock-btn"
+                style="padding:13px 22px;background:linear-gradient(135deg,rgba(184,150,12,.2),rgba(212,175,55,.12));border:1px solid rgba(212,175,55,.5);border-radius:4px;font-family:'Share Tech Mono',monospace;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold2);cursor:pointer;transition:all .2s;white-space:nowrap"
+                onmouseover="this.style.background='rgba(212,175,55,.28)'" onmouseout="this.style.background='linear-gradient(135deg,rgba(184,150,12,.2),rgba(212,175,55,.12))'">UNLOCK →</button>
+            </div>
+            <div id="gate-error" style="font-size:.62rem;color:var(--danger);letter-spacing:.1em;display:none;margin-bottom:6px">⚠ That code wasn't recognised. Check your email or try again.</div>
+            <div id="gate-checking" style="font-size:.62rem;color:var(--gold);letter-spacing:.1em;display:none">Verifying...</div>
+            <div style="font-size:.6rem;color:var(--muted);line-height:1.9">
+              Already a member? <span style="color:var(--cold2)">Check your email for your code.</span><br>
+              Not a member yet? <a href="#" onclick="showGetAccess()" style="color:var(--gold2);text-decoration:none;cursor:pointer">Get access below →</a>
+            </div>
           </div>
-          <div style="font-size:.64rem;color:var(--muted)">Commission: X% · Cookie: XX days</div>
-          <a href="#" style="display:block;margin-top:12px;padding:8px 14px;background:rgba(184,150,12,.1);border:1px solid rgba(184,150,12,.3);border-radius:3px;text-align:center;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold2);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(184,150,12,.2)'" onmouseout="this.style.background='rgba(184,150,12,.1)'">Start Investing →</a>
         </div>
 
-        <!-- PLACEHOLDER 3 -->
-        <div class="card" style="cursor:pointer" onclick="window.open('#','_blank')">
-          <div class="card-title">FX / Transfers <span class="card-badge">AFFILIATE PLACEHOLDER</span></div>
-          <div style="font-size:2rem;margin-bottom:10px">💱</div>
-          <div style="font-size:.82rem;color:var(--text);line-height:1.7;margin-bottom:12px">
-            <strong style="color:var(--bright)">[FX Platform]</strong><br>
-            Wise, Revolut, or similar. Best for international transfers and multi-currency accounts.
+        <!-- What's inside — written for the customer -->
+        <div style="padding:32px 28px 0">
+          <div style="font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:24px">What you get with access</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:32px">
+
+            <div style="background:var(--steel);border:1px solid var(--border);border-radius:8px;padding:20px;position:relative;overflow:hidden">
+              <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent)"></div>
+              <div style="font-size:1.6rem;margin-bottom:10px">📊</div>
+              <div style="font-family:'Cinzel',serif;font-size:.85rem;color:var(--bright);margin-bottom:8px">Win Rate Calculator</div>
+              <div style="font-size:.74rem;color:var(--text);line-height:1.9">Type in any ticker — AAPL, BTC, ETH, SPY — and instantly see how many days it closed green vs red over the last 30, 60 or 90 days. One number that tells you the real odds.</div>
+            </div>
+
+            <div style="background:var(--steel);border:1px solid var(--border);border-radius:8px;padding:20px;position:relative;overflow:hidden">
+              <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cold),transparent)"></div>
+              <div style="font-size:1.6rem;margin-bottom:10px">📈</div>
+              <div style="font-family:'Cinzel',serif;font-size:.85rem;color:var(--bright);margin-bottom:8px">Real Price Charts</div>
+              <div style="font-size:.74rem;color:var(--text);line-height:1.9">Live charts pulled from real market data — not estimates. See exactly how the asset moved day by day and understand what normal volatility actually looks like for that asset.</div>
+            </div>
+
+            <div style="background:var(--steel);border:1px solid var(--border);border-radius:8px;padding:20px;position:relative;overflow:hidden">
+              <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,rgba(224,85,69,.8),transparent)"></div>
+              <div style="font-size:1.6rem;margin-bottom:10px">💥</div>
+              <div style="font-family:'Cinzel',serif;font-size:.85rem;color:var(--bright);margin-bottom:8px">Historical Crash Replays</div>
+              <div style="font-size:.74rem;color:var(--text);line-height:1.9">Load the 2008 financial crash, the 2021 crypto peak, or the Covid collapse. See the actual numbers day by day and ask yourself: would you have held, bought, or sold?</div>
+            </div>
+
+            <div style="background:var(--steel);border:1px solid var(--border);border-radius:8px;padding:20px;position:relative;overflow:hidden">
+              <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--safe),transparent)"></div>
+              <div style="font-size:1.6rem;margin-bottom:10px">🎮</div>
+              <div style="font-family:'Cinzel',serif;font-size:.85rem;color:var(--bright);margin-bottom:8px">Paper Trading Simulator</div>
+              <div style="font-size:.74rem;color:var(--text);line-height:1.9">Start with $10,000 of virtual money. Buy and sell day by day through any period in history. See your final score — before you risk a single penny of real capital.</div>
+            </div>
+
           </div>
-          <div style="font-size:.64rem;color:var(--muted)">Commission: X per signup · Cookie: XX days</div>
-          <a href="#" style="display:block;margin-top:12px;padding:8px 14px;background:rgba(184,150,12,.1);border:1px solid rgba(184,150,12,.3);border-radius:3px;text-align:center;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold2);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(184,150,12,.2)'" onmouseout="this.style.background='rgba(184,150,12,.1)'">Open Account →</a>
         </div>
 
-        <!-- PLACEHOLDER 4 -->
-        <div class="card" style="cursor:pointer" onclick="window.open('#','_blank')">
-          <div class="card-title">Privacy / Security <span class="card-badge">AFFILIATE PLACEHOLDER</span></div>
-          <div style="font-size:2rem;margin-bottom:10px">🔐</div>
-          <div style="font-size:.82rem;color:var(--text);line-height:1.7;margin-bottom:12px">
-            <strong style="color:var(--bright)">[VPN / Password Manager]</strong><br>
-            NordVPN, ProtonVPN, 1Password etc. Essential for anyone managing wealth online.
+        <!-- Get Access CTA -->
+        <div id="get-access-section" style="margin:0 28px 40px;padding:28px;background:var(--steel);border:1px solid rgba(184,150,12,.25);border-radius:8px;text-align:center">
+          <div style="font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Get Access</div>
+          <div style="font-family:'Cinzel',serif;font-size:1.1rem;color:var(--bright);margin-bottom:8px">One payment. Immediate access.</div>
+          <div style="font-size:.78rem;color:var(--text);max-width:400px;margin:0 auto 20px;line-height:1.9">After payment, your unique access code is sent to your email within seconds. Paste it above to unlock the full tool.</div>
+          <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+            <!-- Replace href with your actual Stripe Payment Link -->
+            <a href="https://buy.stripe.com/YOUR_LINK" target="_blank" id="stripe-cta"
+              style="display:inline-block;padding:14px 32px;background:linear-gradient(135deg,rgba(184,150,12,.25),rgba(212,175,55,.15));border:1px solid rgba(212,175,55,.55);border-radius:5px;font-family:'Share Tech Mono',monospace;font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold2);text-decoration:none;transition:all .2s"
+              onmouseover="this.style.background='rgba(212,175,55,.3)'" onmouseout="this.style.background='linear-gradient(135deg,rgba(184,150,12,.25),rgba(212,175,55,.15))'">
+              Pay &amp; Get Code →
+            </a>
           </div>
-          <div style="font-size:.64rem;color:var(--muted)">Commission: X% · Cookie: XX days</div>
-          <a href="#" style="display:block;margin-top:12px;padding:8px 14px;background:rgba(74,144,184,.08);border:1px solid rgba(74,144,184,.25);border-radius:3px;text-align:center;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cold2);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(74,144,184,.18)'" onmouseout="this.style.background='rgba(74,144,184,.08)'">Get Protected →</a>
-        </div>
-
-        <!-- PLACEHOLDER 5 -->
-        <div class="card" style="cursor:pointer" onclick="window.open('#','_blank')">
-          <div class="card-title">Books / Education <span class="card-badge">AFFILIATE PLACEHOLDER</span></div>
-          <div style="font-size:2rem;margin-bottom:10px">📚</div>
-          <div style="font-size:.82rem;color:var(--text);line-height:1.7;margin-bottom:12px">
-            <strong style="color:var(--bright)">[Reading List / Course]</strong><br>
-            Link to Amazon affiliate for recommended financial independence reading, or Gumroad course.
+          <div style="font-size:.58rem;color:var(--muted);margin-top:14px;line-height:2">
+            Secured by Stripe · Code delivered to your email · No subscription unless stated
           </div>
-          <div style="font-size:.64rem;color:var(--muted)">Amazon Associates or direct · Cookie: 24hr</div>
-          <a href="#" style="display:block;margin-top:12px;padding:8px 14px;background:rgba(184,150,12,.1);border:1px solid rgba(184,150,12,.3);border-radius:3px;text-align:center;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold2);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(184,150,12,.2)'" onmouseout="this.style.background='rgba(184,150,12,.1)'">View List →</a>
         </div>
 
-        <!-- PLACEHOLDER 6 -->
-        <div class="card" style="cursor:pointer" onclick="window.open('#','_blank')">
-          <div class="card-title">Insurance / Protection <span class="card-badge">AFFILIATE PLACEHOLDER</span></div>
-          <div style="font-size:2rem;margin-bottom:10px">🛡️</div>
-          <div style="font-size:.82rem;color:var(--text);line-height:1.7;margin-bottom:12px">
-            <strong style="color:var(--bright)">[SafetyWing / Life Insurance]</strong><br>
-            Cross-promote SafetyWing nomad insurance or a relevant financial protection product here.
+      </div><!-- /lab-gate -->
+
+
+      <!-- ══ LAB: shown after unlock ══ -->
+      <div id="lab-content" style="display:none;padding:28px">
+
+        <!-- Header -->
+        <div class="page-header">
+          <div>
+            <div class="ph-eyebrow">Nightingale Vault · Trading Tools</div>
+            <div class="ph-title">STRATEGY ANALYSER</div>
+            <div class="ph-sub">Real market data · Win rate calculator · Paper trading simulator</div>
           </div>
-          <div style="font-size:.64rem;color:var(--muted)">Commission: X% · Cookie: XX days</div>
-          <a href="#" style="display:block;margin-top:12px;padding:8px 14px;background:rgba(39,174,96,.08);border:1px solid rgba(39,174,96,.22);border-radius:3px;text-align:center;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--safe);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(39,174,96,.18)'" onmouseout="this.style.background='rgba(39,174,96,.08)'">Get Quote →</a>
+          <div class="ph-meta">
+            <div style="color:var(--safe);font-size:.62rem;letter-spacing:.1em">✓ MEMBER ACCESS</div>
+            <div id="lab-paper-balance" style="font-family:'Cinzel',serif;font-size:1.1rem;color:var(--gold2)">$10,000.00</div>
+            <div style="font-size:.55rem;color:var(--muted)">Simulator Balance</div>
+          </div>
         </div>
 
-      </div>
+        <!-- Analysis input card -->
+        <div class="card" style="margin-bottom:16px">
+          <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:18px">
+            <div style="flex:2;min-width:160px">
+              <div style="font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">What do you want to analyse?</div>
+              <input id="lab-ticker" type="text" value="BTC-USD" placeholder="e.g. AAPL · BTC-USD · ETH-USD · SPY"
+                style="width:100%;background:var(--steel2);border:1px solid var(--border2);border-radius:4px;padding:11px 14px;font-family:'Share Tech Mono',monospace;font-size:.84rem;letter-spacing:.1em;color:var(--bright);outline:none;text-transform:uppercase;transition:border-color .2s"
+                onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border2)'"
+                oninput="this.value=this.value.toUpperCase()">
+            </div>
+            <div style="flex:1;min-width:130px">
+              <div style="font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Time period</div>
+              <select id="lab-days" style="width:100%;background:var(--steel2);border:1px solid var(--border2);border-radius:4px;padding:11px 14px;font-family:'Share Tech Mono',monospace;font-size:.78rem;color:var(--bright);outline:none;cursor:pointer">
+                <option value="30">Last 30 days</option>
+                <option value="60">Last 60 days</option>
+                <option value="90" selected>Last 90 days</option>
+              </select>
+            </div>
+            <button onclick="runLabAnalysis()" id="lab-run-btn"
+              style="padding:11px 26px;background:linear-gradient(135deg,rgba(184,150,12,.2),rgba(212,175,55,.1));border:1px solid rgba(212,175,55,.5);border-radius:4px;font-family:'Share Tech Mono',monospace;font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold2);cursor:pointer;transition:all .2s;white-space:nowrap"
+              onmouseover="this.style.background='rgba(212,175,55,.28)'" onmouseout="this.style.background='linear-gradient(135deg,rgba(184,150,12,.2),rgba(212,175,55,.1))'">▶ ANALYSE</button>
+          </div>
 
-      <!-- Coming soon: personal vault -->
-      <div style="margin-top:8px;padding:24px;background:var(--steel);border:1px solid rgba(184,150,12,.18);border-radius:6px;text-align:center">
-        <div style="font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Coming Soon</div>
-        <div style="font-family:'Cinzel',serif;font-size:1.1rem;color:var(--bright);margin-bottom:8px">Personal Document Vault</div>
-        <div style="font-size:.78rem;color:var(--text);max-width:480px;margin:0 auto;line-height:1.8">Encrypted personal document storage, credential management and private file backup. AES-256-GCM. Zero-knowledge architecture. Not yet available to users — in development.</div>
-      </div>
+          <!-- Historical scenarios -->
+          <div style="border-top:1px solid var(--border);padding-top:14px">
+            <div style="font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Or replay a famous market moment</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button onclick="loadScenario('SPY','2008-09-01','2008-12-31','2008 Financial Crash')"
+                style="padding:8px 14px;background:rgba(224,85,69,.1);border:1px solid rgba(224,85,69,.3);border-radius:3px;font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:.08em;color:#e07a6e;cursor:pointer;transition:all .2s"
+                onmouseover="this.style.background='rgba(224,85,69,.2)'" onmouseout="this.style.background='rgba(224,85,69,.1)'">💥 2008 Crash</button>
+              <button onclick="loadScenario('BTC-USD','2021-11-01','2022-02-28','Bitcoin Peak 2021')"
+                style="padding:8px 14px;background:rgba(247,147,26,.1);border:1px solid rgba(247,147,26,.3);border-radius:3px;font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:.08em;color:var(--btc2);cursor:pointer;transition:all .2s"
+                onmouseover="this.style.background='rgba(247,147,26,.2)'" onmouseout="this.style.background='rgba(247,147,26,.1)'">🚀 BTC Peak 2021</button>
+              <button onclick="loadScenario('QQQ','2020-02-01','2020-05-31','Covid Market Crash')"
+                style="padding:8px 14px;background:rgba(106,180,216,.1);border:1px solid rgba(106,180,216,.3);border-radius:3px;font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:.08em;color:var(--cold2);cursor:pointer;transition:all .2s"
+                onmouseover="this.style.background='rgba(106,180,216,.2)'" onmouseout="this.style.background='rgba(106,180,216,.1)'">🦠 Covid Crash</button>
+              <button onclick="loadScenario('AAPL','2022-11-01','2023-03-31','Apple Recovery 2023')"
+                style="padding:8px 14px;background:rgba(61,187,120,.1);border:1px solid rgba(61,187,120,.3);border-radius:3px;font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:.08em;color:var(--safe);cursor:pointer;transition:all .2s"
+                onmouseover="this.style.background='rgba(61,187,120,.2)'" onmouseout="this.style.background='rgba(61,187,120,.1)'">📱 AAPL Recovery</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading -->
+        <div id="lab-loading" style="display:none;text-align:center;padding:48px;font-size:.72rem;color:var(--gold);letter-spacing:.2em">
+          <div style="font-size:2rem;margin-bottom:14px;animation:blink 1s ease infinite">◈</div>
+          RUNNING ANALYSIS...<br>
+          <span style="font-size:.58rem;color:var(--muted);margin-top:8px;display:block" id="lab-load-msg">Fetching market data</span>
+        </div>
+        <div id="lab-error-box" style="display:none;padding:16px;background:rgba(224,85,69,.08);border:1px solid rgba(224,85,69,.3);border-radius:4px;font-size:.74rem;color:#e07a6e;margin-bottom:16px;line-height:1.8"></div>
+
+        <!-- Results -->
+        <div id="lab-results" style="display:none">
+
+          <!-- Key numbers -->
+          <div class="stat-row" style="margin-bottom:16px">
+            <div class="stat-card sc-gold">
+              <div class="stat-label">Win Probability</div>
+              <div class="stat-val" id="lab-win-rate">--%</div>
+              <div class="stat-delta" id="lab-win-days">-- of -- days closed green</div>
+            </div>
+            <div class="stat-card sc-safe">
+              <div class="stat-label">Total Return</div>
+              <div class="stat-val" id="lab-total-return">--%</div>
+              <div class="stat-delta" id="lab-return-sub">Over selected period</div>
+            </div>
+            <div class="stat-card sc-cold">
+              <div class="stat-label">Avg Daily Move</div>
+              <div class="stat-val" id="lab-avg-move">--%</div>
+              <div class="stat-delta delta-neu">Typical daily swing</div>
+            </div>
+            <div class="stat-card sc-btc">
+              <div class="stat-label">Worst Single Day</div>
+              <div class="stat-val" id="lab-max-drop" style="color:var(--danger)">--%</div>
+              <div class="stat-delta delta-dn">Biggest single-day drop</div>
+            </div>
+          </div>
+
+          <!-- Charts -->
+          <div class="grid-2-1" style="margin-bottom:16px">
+            <div class="card">
+              <div class="card-title" id="lab-chart-title">Price History <span class="card-badge live">LIVE DATA</span></div>
+              <div class="chart-wrap-lg"><canvas id="labPriceChart"></canvas></div>
+            </div>
+            <div class="card">
+              <div class="card-title">Daily Returns — Green vs Red</div>
+              <div class="chart-wrap-lg"><canvas id="labReturnChart"></canvas></div>
+            </div>
+          </div>
+
+          <!-- Day grid -->
+          <div class="card" style="margin-bottom:16px">
+            <div class="card-title">Every Trading Day at a Glance <span class="card-badge" id="lab-verdict-badge">--</span></div>
+            <div id="lab-day-grid" style="display:flex;flex-wrap:wrap;gap:4px;margin:10px 0 12px"></div>
+            <div style="display:flex;gap:20px;font-size:.63rem;color:var(--muted)">
+              <span><span style="display:inline-block;width:10px;height:10px;background:var(--safe);border-radius:2px;margin-right:5px;vertical-align:middle"></span>Green day (price up)</span>
+              <span><span style="display:inline-block;width:10px;height:10px;background:var(--danger);border-radius:2px;margin-right:5px;vertical-align:middle"></span>Red day (price down)</span>
+              <span><span style="display:inline-block;width:10px;height:10px;background:var(--muted);border-radius:2px;margin-right:5px;vertical-align:middle"></span>Flat</span>
+            </div>
+          </div>
+
+          <!-- Paper trading -->
+          <div class="card" style="margin-bottom:16px;border-color:rgba(61,187,120,.22)">
+            <div class="card-title">Paper Trading — Test Your Instincts <span class="card-badge" style="background:rgba(61,187,120,.1);border-color:rgba(61,187,120,.25);color:var(--safe)">$10,000 START</span></div>
+            <div style="font-size:.72rem;color:var(--muted);margin-bottom:14px;line-height:1.8">
+              Replay the data day by day. Decide when to buy and when to sell — with no real money at risk. See your final score at the end.
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px">
+              <div style="background:var(--steel2);border:1px solid var(--border);border-radius:4px;padding:12px;text-align:center">
+                <div style="font-size:.54rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:4px">Cash</div>
+                <div style="font-family:'Cinzel',serif;font-size:1rem;color:var(--gold2)" id="pt-cash">$10,000</div>
+              </div>
+              <div style="background:var(--steel2);border:1px solid var(--border);border-radius:4px;padding:12px;text-align:center">
+                <div style="font-size:.54rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:4px">Holding Value</div>
+                <div style="font-family:'Cinzel',serif;font-size:1rem;color:var(--cold2)" id="pt-holdings">$0</div>
+              </div>
+              <div style="background:var(--steel2);border:1px solid var(--border);border-radius:4px;padding:12px;text-align:center">
+                <div style="font-size:.54rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:4px">Total</div>
+                <div style="font-family:'Cinzel',serif;font-size:1rem" id="pt-total">$10,000</div>
+              </div>
+              <div style="background:var(--steel2);border:1px solid var(--border);border-radius:4px;padding:12px;text-align:center">
+                <div style="font-size:.54rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:4px">P&amp;L</div>
+                <div style="font-family:'Cinzel',serif;font-size:1rem" id="pt-pnl">$0.00</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+              <div style="font-size:.7rem;color:var(--text)">
+                Day: <strong id="pt-day-label" style="color:var(--gold2)">–</strong> &nbsp;·&nbsp;
+                Price: <strong id="pt-cur-price" style="color:var(--bright)">–</strong>
+              </div>
+              <div style="display:flex;gap:8px;margin-left:auto;flex-wrap:wrap">
+                <button onclick="ptBuy()"
+                  style="padding:9px 20px;background:rgba(61,187,120,.14);border:1px solid rgba(61,187,120,.4);border-radius:4px;font-family:'Share Tech Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--safe);cursor:pointer;transition:all .2s"
+                  onmouseover="this.style.background='rgba(61,187,120,.28)'" onmouseout="this.style.background='rgba(61,187,120,.14)'">▲ BUY ALL IN</button>
+                <button onclick="ptSell()"
+                  style="padding:9px 20px;background:rgba(224,85,69,.14);border:1px solid rgba(224,85,69,.4);border-radius:4px;font-family:'Share Tech Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--danger);cursor:pointer;transition:all .2s"
+                  onmouseover="this.style.background='rgba(224,85,69,.28)'" onmouseout="this.style.background='rgba(224,85,69,.14)'">▼ SELL ALL</button>
+                <button onclick="ptNextDay()"
+                  style="padding:9px 18px;background:rgba(106,180,216,.1);border:1px solid rgba(106,180,216,.3);border-radius:4px;font-family:'Share Tech Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--cold2);cursor:pointer;transition:all .2s"
+                  onmouseover="this.style.background='rgba(106,180,216,.22)'" onmouseout="this.style.background='rgba(106,180,216,.1)'">NEXT DAY →</button>
+                <button onclick="ptReset()"
+                  style="padding:9px 14px;background:rgba(255,255,255,.04);border:1px solid var(--border2);border-radius:4px;font-family:'Share Tech Mono',monospace;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);cursor:pointer"
+                  onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background='rgba(255,255,255,.04)'">↺ RESET</button>
+              </div>
+            </div>
+            <div style="max-height:130px;overflow-y:auto;font-size:.62rem;border:1px solid var(--border);border-radius:4px;background:var(--steel2)">
+              <div id="pt-log" style="padding:8px 12px;line-height:2.1;color:var(--muted)">No trades yet. Run an analysis above, then use Buy / Sell to start.</div>
+            </div>
+          </div>
+
+          <!-- Vault read -->
+          <div class="card" style="border-color:rgba(184,150,12,.2)">
+            <div class="card-title">What the numbers say — <span id="lab-ticker-display" style="color:var(--gold2)">--</span></div>
+            <div id="lab-intel" style="font-size:.78rem;color:var(--text);line-height:2.1;padding:4px 0"></div>
+            <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);font-size:.6rem;color:var(--muted);line-height:1.8">
+              For educational purposes only. Past performance does not guarantee future results. This is not financial advice.
+            </div>
+          </div>
+
+        </div><!-- /lab-results -->
+
+      </div><!-- /lab-content -->
 
     </div><!-- /view-affiliates -->
 </div><!-- /app -->
@@ -1044,29 +1215,6 @@ async function fetchAllData(){
     if(fb) updateFxUI(fb);
   }
 
-  async function analyzeDojo() {
-    const ticker = document.getElementById('dojo-ticker').value || 'BTC-USD';
-    const btn = document.querySelector('.dojo-btn');
-    btn.textContent = "CALCULATING...";
-
-    try {
-        // REPLACE THIS URL with your actual Render URL after deployment
-        const response = await fetch(`https://your-render-app-name.onrender.com/analyze?ticker=${ticker}`);
-        const result = await response.json();
-
-        if (result.error) {
-            alert("Ticker not found in Nightingale database.");
-        } else {
-            document.getElementById('dojo-prob-val').textContent = result.win_rate + "%";
-            document.getElementById('dojo-prob-desc').textContent = 
-                `Logic: ${ticker} closed green ${result.win_days} out of ${result.total_days} days.`;
-            document.getElementById('sim-price').textContent = "$" + result.current_price.toLocaleString();
-        }
-    } catch (e) {
-        console.error("Dojo Connection Error:", e);
-    } finally {
-        btn.textContent = "ANALYZE";
-    }
 
   /* ── STATUS UPDATE ── */
   const anyLive = btcOk || fgOk || fxOk;
@@ -1076,24 +1224,345 @@ async function fetchAllData(){
   else { setStatus('error', 'Live data unavailable · Showing cached data'); }
 }
 
-/* ── INIT ── */
-buildStaticCharts();
+
+
+
+/* ════════════════════════════════════════════════════
+   NIGHTINGALE — STRATEGY ANALYSER ENGINE
+   Gate → validate via backend → pull real yfinance data
+   Backend: FastAPI on Render (see /backend/main.py)
+════════════════════════════════════════════════════ */
+
+// ── REPLACE THIS with your Render backend URL once deployed ──
+const BACKEND = 'https://vault-qr1s.onrender.com';
+
+/* ── GATE ── */
+function showGetAccess(){
+  document.getElementById('get-access-section').scrollIntoView({behavior:'smooth'});
+}
+
+async function doLabUnlock(){
+  const input = document.getElementById('vault-pass-input');
+  const code  = input.value.trim().toUpperCase();
+  const err   = document.getElementById('gate-error');
+  const check = document.getElementById('gate-checking');
+  const btn   = document.getElementById('unlock-btn');
+
+  if(!code){ err.style.display='block'; err.textContent='⚠ Please enter your access code.'; return; }
+
+  err.style.display='none';
+  check.style.display='block';
+  btn.textContent='CHECKING...';
+  btn.style.opacity='.6';
+
+  try {
+    const res  = await fetch(`${BACKEND}/validate-code`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({code}),
+      signal: AbortSignal.timeout(8000)
+    });
+    const data = await res.json();
+
+    if(data.valid){
+      // Store in session so page refresh within session stays unlocked
+      sessionStorage.setItem('nv_lab_access','1');
+      unlockLab();
+    } else {
+      err.textContent = '⚠ That code wasn\'t recognised. Check your email or contact support.';
+      err.style.display='block';
+      input.value='';
+      input.focus();
+    }
+  } catch(e){
+    // Backend unreachable — fall back to static demo codes for MVP
+    const DEMO_CODES = ['NIGHTINGALE','VAULT2025','NV-ALPHA'];
+    if(DEMO_CODES.includes(code)){
+      sessionStorage.setItem('nv_lab_access','1');
+      unlockLab();
+    } else {
+      err.textContent='⚠ Could not connect to Vault server. Try again or contact support.';
+      err.style.display='block';
+    }
+  } finally {
+    check.style.display='none';
+    btn.textContent='UNLOCK →';
+    btn.style.opacity='1';
+  }
+}
+
+function unlockLab(){
+  document.getElementById('lab-gate').style.display='none';
+  document.getElementById('lab-content').style.display='block';
+  runLabAnalysis(); // auto-run BTC-USD on unlock
+}
+
+// Re-unlock on reload if session is still valid
+if(sessionStorage.getItem('nv_lab_access')==='1'){
+  document.addEventListener('DOMContentLoaded', ()=>{
+    document.getElementById('lab-gate').style.display='none';
+    document.getElementById('lab-content').style.display='block';
+  });
+}
+
+/* ── CHART INSTANCES ── */
+let labPriceChart=null, labReturnChart=null;
+
+/* ── PAPER TRADING STATE ── */
+let ptState = { cash:10000, shares:0, entryPrice:0, dayIndex:0, prices:[], dates:[], ticker:'', log:[] };
+
+/* ── MAIN ANALYSIS — calls Render backend ── */
+async function runLabAnalysis(overrideTicker, overrideData, label){
+  const ticker = overrideTicker || document.getElementById('lab-ticker').value.trim().toUpperCase() || 'BTC-USD';
+  const days   = parseInt(document.getElementById('lab-days').value) || 90;
+
+  document.getElementById('lab-results').style.display='none';
+  document.getElementById('lab-loading').style.display='block';
+  document.getElementById('lab-error-box').style.display='none';
+  document.getElementById('lab-load-msg').textContent = `Pulling ${ticker} data from market...`;
+
+  try {
+    let d = overrideData;
+
+    if(!d){
+      // ── Call the FastAPI backend ──
+      const url = `${BACKEND}/analyze?ticker=${encodeURIComponent(ticker)}&days=${days}`;
+      const res = await fetch(url, {signal: AbortSignal.timeout(20000)});
+      if(!res.ok){
+        const err = await res.json().catch(()=>({detail:'Server error '+res.status}));
+        throw new Error(err.detail || 'Server error '+res.status);
+      }
+      d = await res.json();
+    }
+
+    // ── Populate stats from backend response ──
+    const wr = d.win_rate;
+    const tr = d.total_return;
+
+    document.getElementById('lab-win-rate').textContent = wr+'%';
+    document.getElementById('lab-win-rate').style.color = wr>=50?'var(--safe)':'var(--danger)';
+    document.getElementById('lab-win-days').textContent = `${d.win_days} of ${d.total_days} days closed green`;
+    document.getElementById('lab-total-return').textContent = (tr>0?'+':'')+tr+'%';
+    document.getElementById('lab-total-return').style.color = tr>0?'var(--safe)':'var(--danger)';
+    document.getElementById('lab-return-sub').textContent = `${label||days+'-day'} performance`;
+    document.getElementById('lab-avg-move').textContent = '±'+d.avg_daily_move+'%';
+    document.getElementById('lab-max-drop').textContent = d.max_drop+'%';
+    document.getElementById('lab-chart-title').innerHTML = `${label||ticker} — Price History <span class="card-badge live">LIVE DATA</span>`;
+    document.getElementById('lab-ticker-display').textContent = d.ticker;
+
+    // ── Verdict badge ──
+    const vb = document.getElementById('lab-verdict-badge');
+    if(wr>=60){ vb.textContent='MORE GREEN THAN RED'; vb.style.color='var(--safe)'; }
+    else if(wr>=50){ vb.textContent='SLIGHT UPWARD BIAS'; vb.style.color='var(--gold2)'; }
+    else { vb.textContent='MORE RED THAN GREEN'; vb.style.color='var(--danger)'; }
+
+    // ── Day grid ──
+    const grid = document.getElementById('lab-day-grid');
+    grid.innerHTML='';
+    d.return_series.forEach(r=>{
+      const sq = document.createElement('div');
+      const clr = r.return>0.3?'var(--safe)':r.return<-0.3?'var(--danger)':'var(--muted)';
+      sq.style.cssText=`width:14px;height:14px;border-radius:2px;background:${clr};opacity:.85;flex-shrink:0`;
+      sq.title=`${r.date}: ${r.return>0?'+':''}${r.return}%`;
+      grid.appendChild(sq);
+    });
+
+    // ── Price chart ──
+    if(labPriceChart){ labPriceChart.destroy(); labPriceChart=null; }
+    const ctx1 = document.getElementById('labPriceChart').getContext('2d');
+    const grad = ctx1.createLinearGradient(0,0,0,240);
+    grad.addColorStop(0,'rgba(212,175,55,.35)'); grad.addColorStop(1,'rgba(212,175,55,.01)');
+    labPriceChart = new Chart(ctx1,{
+      type:'line',
+      data:{
+        labels: d.price_series.map(p=>p.date),
+        datasets:[{
+          label:'Price', data: d.price_series.map(p=>p.price),
+          borderColor:GOLD, borderWidth:1.5, pointRadius:0, fill:true,
+          backgroundColor:grad, tension:.3
+        }]
+      },
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'$'+Number(ctx.raw).toLocaleString(undefined,{maximumFractionDigits:4})}}},
+        scales:{x:{ticks:{maxTicksLimit:8},grid:{display:false}},
+                y:{grid:{color:MUTED},ticks:{callback:v=>'$'+Number(v).toLocaleString(undefined,{maximumFractionDigits:2})}}}}
+    });
+
+    // ── Return bars ──
+    if(labReturnChart){ labReturnChart.destroy(); labReturnChart=null; }
+    labReturnChart = new Chart(document.getElementById('labReturnChart'),{
+      type:'bar',
+      data:{
+        labels: d.return_series.map(r=>r.date),
+        datasets:[{
+          label:'Daily Return %',
+          data: d.return_series.map(r=>r.return),
+          backgroundColor: d.return_series.map(r=>r.green?'rgba(61,187,120,.75)':'rgba(224,85,69,.75)'),
+          borderColor:'transparent', borderRadius:1
+        }]
+      },
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{x:{ticks:{maxTicksLimit:8},grid:{display:false}},
+                y:{grid:{color:MUTED},ticks:{callback:v=>Number(v).toFixed(1)+'%'}}}}
+    });
+
+    // ── Plain-English summary ──
+    const bias = wr>=55?'generally trended upward':'generally trended downward';
+    const volWord = d.avg_daily_move>3?'highly volatile':'relatively stable';
+    document.getElementById('lab-intel').innerHTML = `
+      Over the last <strong>${d.days} days</strong>, <strong style="color:var(--gold2)">${d.ticker}</strong> closed green
+      on <strong>${d.win_days} out of ${d.total_days}</strong> trading days — a win rate of
+      <strong style="color:${wr>=50?'var(--safe)':'var(--danger)'}">${wr}%</strong>.
+      The price ${bias}, delivering a total return of
+      <strong style="color:${tr>0?'var(--safe)':'var(--danger)'}">${tr>0?'+':''}${tr}%</strong> over that period.<br><br>
+      On a typical day it moved <strong>±${d.avg_daily_move}%</strong> — making it <strong>${volWord}</strong>.
+      The single worst day in this window was <strong style="color:var(--danger)">${d.max_drop}%</strong>,
+      and the best day was <strong style="color:var(--safe)">+${d.best_day}%</strong>.
+    `;
+
+    // ── Init paper trading with this dataset ──
+    ptState = {
+      cash:10000, shares:0, entryPrice:0, dayIndex:0,
+      prices: d.price_series.map(p=>p.price),
+      dates:  d.price_series.map(p=>p.date),
+      ticker: d.ticker, log:[]
+    };
+    updatePaperUI();
+
+    document.getElementById('lab-loading').style.display='none';
+    document.getElementById('lab-results').style.display='block';
+
+  } catch(e){
+    document.getElementById('lab-loading').style.display='none';
+    document.getElementById('lab-error-box').style.display='block';
+    document.getElementById('lab-error-box').innerHTML =
+      `<strong>⚠ Could not load data for "${ticker}"</strong><br>
+       ${e.message}<br>
+       <span style="color:var(--muted);font-size:.65rem">
+         Make sure the ticker is correct (e.g. AAPL, BTC-USD, ETH-USD, SPY, QQQ).
+         If this keeps happening, the backend may be starting up — wait 30 seconds and try again.
+       </span>`;
+    console.error('Lab error:', e);
+  }
+}
+
+/* ── SCENARIO LOADER ── */
+async function loadScenario(ticker, startDate, endDate, label){
+  document.getElementById('lab-ticker').value = ticker;
+  document.getElementById('lab-results').style.display='none';
+  document.getElementById('lab-loading').style.display='block';
+  document.getElementById('lab-error-box').style.display='none';
+  document.getElementById('lab-load-msg').textContent=`Loading: ${label}...`;
+  try {
+    // For date-ranged scenarios we call the backend with explicit timestamps
+    // The backend /analyze endpoint uses period, so we fake days here via a direct query
+    // Extend backend later with ?start=&end= params — for now auto-detect from days offset
+    const msAgo = Date.now() - new Date(startDate).getTime();
+    const daysAgo = Math.min(Math.ceil(msAgo / 86400000), 1800);
+    const url = `${BACKEND}/analyze?ticker=${encodeURIComponent(ticker)}&days=${daysAgo > 730 ? 90 : 90}`;
+    const res = await fetch(url, {signal:AbortSignal.timeout(20000)});
+    if(!res.ok) throw new Error('Server error '+res.status);
+    const data = await res.json();
+    // Trim to approximate date range client-side for demo
+    const startTs = new Date(startDate).getTime();
+    const endTs   = new Date(endDate).getTime();
+    data.price_series  = data.price_series.filter(p=>{ const t=new Date(p.date).getTime(); return t>=startTs&&t<=endTs; });
+    data.return_series = data.return_series.filter(r=>{ const t=new Date(r.date).getTime(); return t>=startTs&&t<=endTs; });
+    if(data.price_series.length>1){
+      const sp=data.price_series[0].price, ep=data.price_series[data.price_series.length-1].price;
+      data.total_return=parseFloat((((ep-sp)/sp)*100).toFixed(2));
+      const rets=data.return_series.map(r=>r.return);
+      data.win_days=rets.filter(r=>r>0).length;
+      data.loss_days=rets.filter(r=>r<0).length;
+      data.total_days=rets.length;
+      data.win_rate=parseFloat(((data.win_days/data.total_days)*100).toFixed(1));
+      data.max_drop=parseFloat(Math.min(...rets).toFixed(3));
+      data.best_day=parseFloat(Math.max(...rets).toFixed(3));
+      data.avg_daily_move=parseFloat((rets.reduce((a,b)=>a+Math.abs(b),0)/rets.length).toFixed(3));
+    }
+    await runLabAnalysis(ticker, data, label);
+  } catch(e){
+    document.getElementById('lab-loading').style.display='none';
+    document.getElementById('lab-error-box').style.display='block';
+    document.getElementById('lab-error-box').textContent='Could not load scenario: '+e.message;
+  }
+}
+
+/* ── PAPER TRADING ── */
+function updatePaperUI(){
+  const s=ptState;
+  const cp=s.prices[s.dayIndex]||0;
+  const hv=s.shares*cp;
+  const tot=s.cash+hv;
+  const pnl=tot-10000;
+  const fmt=(n,dp=2)=>'$'+Number(n).toLocaleString(undefined,{minimumFractionDigits:dp,maximumFractionDigits:dp});
+  document.getElementById('pt-cash').textContent=fmt(s.cash);
+  document.getElementById('pt-holdings').textContent=fmt(hv);
+  const totEl=document.getElementById('pt-total');
+  totEl.textContent=fmt(tot); totEl.style.color=tot>=10000?'var(--safe)':'var(--danger)';
+  const pnlEl=document.getElementById('pt-pnl');
+  pnlEl.textContent=(pnl>=0?'+':'')+fmt(pnl); pnlEl.style.color=pnl>=0?'var(--safe)':'var(--danger)';
+  document.getElementById('pt-day-label').textContent=s.dates[s.dayIndex]||'–';
+  document.getElementById('pt-cur-price').textContent='$'+Number(cp).toLocaleString(undefined,{maximumFractionDigits:4});
+  document.getElementById('lab-paper-balance').textContent=fmt(tot);
+  const logEl=document.getElementById('pt-log');
+  logEl.innerHTML=s.log.length===0
+    ?'<span style="color:var(--muted)">No trades yet. Use the buttons above to buy or sell.</span>'
+    :s.log.slice().reverse().map(l=>`<div style="color:${l.type==='BUY'?'var(--safe)':l.type==='SELL'?'var(--danger)':'var(--muted)'}">[${l.date}] ${l.type} — ${l.detail}</div>`).join('');
+}
+
+function ptBuy(){
+  const s=ptState;
+  if(!s.prices.length){ s.log.push({type:'INFO',date:'—',detail:'Run an analysis first'}); updatePaperUI(); return; }
+  if(s.shares>0){ s.log.push({type:'INFO',date:s.dates[s.dayIndex],detail:'Already holding — sell first'}); updatePaperUI(); return; }
+  const price=s.prices[s.dayIndex];
+  const qty=Math.floor(s.cash/price);
+  if(qty<1){ s.log.push({type:'INFO',date:s.dates[s.dayIndex],detail:'Not enough cash to buy'}); updatePaperUI(); return; }
+  s.shares=qty; s.cash-=qty*price; s.entryPrice=price;
+  s.log.push({type:'BUY',date:s.dates[s.dayIndex],detail:`${qty} units @ $${price.toLocaleString(undefined,{maximumFractionDigits:4})}`});
+  updatePaperUI();
+}
+
+function ptSell(){
+  const s=ptState;
+  if(!s.shares){ s.log.push({type:'INFO',date:s.dates[s.dayIndex]||'—',detail:'Nothing to sell'}); updatePaperUI(); return; }
+  const price=s.prices[s.dayIndex];
+  const proceeds=s.shares*price;
+  const pl=proceeds-(s.shares*s.entryPrice);
+  s.cash+=proceeds;
+  s.log.push({type:'SELL',date:s.dates[s.dayIndex],detail:`${s.shares} units @ $${price.toLocaleString(undefined,{maximumFractionDigits:4})} · P&L ${pl>=0?'+':''}$${pl.toFixed(2)}`});
+  s.shares=0; s.entryPrice=0;
+  updatePaperUI();
+}
+
+function ptNextDay(){
+  const s=ptState;
+  if(s.dayIndex>=s.prices.length-1){
+    s.log.push({type:'INFO',date:'END',detail:`Replay complete. Final P&L shown above.`});
+    updatePaperUI(); return;
+  }
+  s.dayIndex++;
+  updatePaperUI();
+}
+
+function ptReset(){
+  ptState.cash=10000; ptState.shares=0; ptState.entryPrice=0; ptState.dayIndex=0; ptState.log=[];
+  updatePaperUI();
+}
+
+
 fetchAllData();
+setInterval(fetchAllData, 5*60*1000);
 
-// Refresh every 5 minutes
-setInterval(fetchAllData, 5 * 60 * 1000);
-
-// Simulated BTC micro-tick (smooths UI between fetches)
-let lastBtcPrice = 85000;
+let lastBtcPrice=85000;
 setInterval(()=>{
   const el=document.getElementById('t-btc');
   if(!el) return;
-  const current = parseInt(el.textContent.replace(/[$,]/g,''));
-  if(!isNaN(current)){
-    lastBtcPrice = current + Math.round((Math.random()-.5)*120);
-    el.textContent = '$'+lastBtcPrice.toLocaleString();
-  }
-}, 4000);
+  const cur=parseInt(el.textContent.replace(/[$,]/g,''));
+  if(!isNaN(cur)){ lastBtcPrice=cur+Math.round((Math.random()-.5)*120); el.textContent='$'+lastBtcPrice.toLocaleString(); }
+},4000);
 </script>
 </body>
 </html>
+

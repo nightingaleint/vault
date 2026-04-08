@@ -1,0 +1,18 @@
+# render.yaml — Nightingale Vault Backend
+# Drop this file in the root of your backend GitHub repo.
+# Render will auto-detect it on first deploy.
+
+services:
+  - type: web
+    name: nightingale-probability-engine
+    runtime: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false          # Set manually in Render dashboard
+      - key: RESEND_API_KEY
+        sync: false          # Set manually in Render dashboard
+      - key: FROM_EMAIL
+        value: vault@nightingalevault.com
+    healthCheckPath: /health
