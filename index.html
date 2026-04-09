@@ -851,7 +851,7 @@ function buildStaticCharts(){
       <div class="cc-bar-row"><span style="min-width:60px">Wealth</span><div class="cc-mini-bar"><div class="cc-mini-fill" style="width:${c.wealth}%;background:${GOLD}"></div></div><span>${c.wealth}</span></div>
       <div class="cc-bar-row"><span style="min-width:60px">Crypto</span><div class="cc-mini-bar"><div class="cc-mini-fill" style="width:${c.crypto}%;background:${BTC}"></div></div><span>${c.crypto}</span></div>
       <div class="cc-bar-row"><span style="min-width:60px">Invest</span><div class="cc-mini-bar"><div class="cc-mini-fill" style="width:${c.invest}%;background:${COLD}"></div></div><span>${c.invest}</span></div>
-      <div style="margin-top:10px;font-size:.62rem;color:#4a5568;line-height:1.6">${c.profile}</div>
+      <div style="margin-top:10px;font-size:.62rem;color:var(--muted);line-height:1.6">${c.profile}</div>
     </div>`;
   });
 }
@@ -1374,6 +1374,7 @@ function ptNextDay(){
 function ptReset(){pt.cash=10000;pt.shares=0;pt.entry=0;pt.idx=0;pt.log=[];updatePT();}
 
 
+buildStaticCharts();
 fetchAllData();
 setInterval(fetchAllData,5*60*1000);
 let lastBtc=85000;
