@@ -61,7 +61,8 @@ async def fetch_twelvedata(ticker: str, days: int) -> list[dict]:
     if not TWELVEDATA_KEY:
         raise HTTPException(500, "TWELVEDATA_API_KEY not set on server. Add it in Render environment variables.")
 
-    outputsize = days_to_outputsize(days)
+    # If custom date range, fetch up to 2 years of data so we can filter
+    outputsize = 500 if date_from and date_to else days_to_outputsize(days)
     url = "https://api.twelvedata.com/time_series"
     params = {
         "symbol":     ticker,
@@ -162,7 +163,7 @@ def health():
     }
 
 @app.get("/analyze")
-async def analyze(ticker: str = "AAPL", days: int = 90):
+async def analyze(ticker: str = "AAPL", days: int = 90, date_from: str = "", date_to: str = ""):
     ticker = ticker.upper().strip()
 
     # Twelve Data uses BTC/USD not BTC-USD for crypto
@@ -174,6 +175,20 @@ async def analyze(ticker: str = "AAPL", days: int = 90):
 
     try:
         prices = await fetch_twelvedata(ticker_td, days)
+
+        # Filter by custom date range if provided
+        if date_from and date_to:
+            try:
+                from datetime import datetime as dt
+                df_start = dt.strptime(date_from, "%Y-%m-%d")
+                df_end   = dt.strptime(date_to,   "%Y-%m-%d")
+                # Re-parse dates for comparison (prices have "dd Mon 'yy" format)
+                def parse_price_date(d):
+                    try: return dt.strptime(d, "%d %b '%y")
+                    except: return None
+                prices = [p for p in prices if parse_price_date(p["date"]) and df_start <= parse_price_date(p["date"]) <= df_end]
+            except Exception:
+                pass  # if date parsing fails, use all data
 
         if len(prices) < 5:
             raise HTTPException(404, f"Not enough data for '{ticker}'. Only {len(prices)} days returned.")
