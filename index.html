@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Nightingale Vault · Macroeconomy Intelligence</title>
+<title>Nightingale Vault · Private Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Share+Tech+Mono&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -577,7 +577,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,8,16,.96);
           <div style="font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Get Access</div>
           <div style="font-family:'Cinzel',serif;font-size:1rem;color:var(--bright);margin-bottom:8px">One payment. Lifetime access.</div>
           <div style="font-size:.76rem;color:var(--text);max-width:380px;margin:0 auto 18px;line-height:1.9">After payment your unique access code arrives by email within seconds. Paste it above to unlock.</div>
-          <a href="https://buy.stripe.com/5kQcN59AJb26bmo7gfbo402" target="_blank"
+          <a href="https://buy.stripe.com/YOUR_LINK" target="_blank"
             style="display:inline-block;padding:13px 30px;background:linear-gradient(135deg,rgba(184,150,12,.22),rgba(212,175,55,.12));border:1px solid rgba(212,175,55,.5);border-radius:5px;font-family:'Share Tech Mono',monospace;font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold2);text-decoration:none;transition:all .2s"
             onmouseover="this.style.background='rgba(212,175,55,.28)'" onmouseout="this.style.background='linear-gradient(135deg,rgba(184,150,12,.22),rgba(212,175,55,.12))'">Pay & Get Instant Access →</a>
           <div style="font-size:.58rem;color:var(--muted);margin-top:12px">Secured by Stripe · Code emailed instantly · No subscription</div>
@@ -601,28 +601,73 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,8,16,.96);
 
         <!-- Input -->
         <div class="card" style="margin-bottom:16px">
-          <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:18px">
+
+          <!-- Ticker + Period + Analyse -->
+          <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:16px">
             <div style="flex:2;min-width:160px">
-              <div style="font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Ticker symbol <span style="color:var(--border2);font-size:.55rem;letter-spacing:.05em;text-transform:none">— stocks: AAPL · TSLA · SPY &nbsp;|&nbsp; crypto: BTC/USD · ETH/USD · SOL/USD</span></div>
-              <input id="lab-ticker" type="text" value="AAPL" placeholder="AAPL · TSLA · SPY · BTC/USD · ETH/USD"
+              <div style="font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Ticker symbol <span style="color:var(--border2);font-size:.55rem;letter-spacing:.04em;text-transform:none">— stocks: AAPL · TSLA · SPY &nbsp;|&nbsp; crypto: BTC/USD · ETH/USD</span></div>
+              <input id="lab-ticker" type="text" value="AAPL" placeholder="AAPL · TSLA · BTC/USD · ETH/USD"
                 style="width:100%;background:var(--steel2);border:1px solid var(--border2);border-radius:4px;padding:11px 14px;font-family:'Share Tech Mono',monospace;font-size:.84rem;letter-spacing:.1em;color:var(--bright);outline:none;text-transform:uppercase;transition:border-color .2s"
                 onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border2)'"
                 oninput="this.value=this.value.toUpperCase()">
             </div>
             <div style="flex:1;min-width:130px">
               <div style="font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Time period</div>
-              <select id="lab-days" style="width:100%;background:var(--steel2);border:1px solid var(--border2);border-radius:4px;padding:11px 14px;font-family:'Share Tech Mono',monospace;font-size:.78rem;color:var(--bright);outline:none;cursor:pointer">
+              <select id="lab-days" onchange="toggleCustomDates(this.value)" style="width:100%;background:var(--steel2);border:1px solid var(--border2);border-radius:4px;padding:11px 14px;font-family:'Share Tech Mono',monospace;font-size:.78rem;color:var(--bright);outline:none;cursor:pointer">
                 <option value="30">Last 30 days</option>
                 <option value="60">Last 60 days</option>
                 <option value="90" selected>Last 90 days</option>
+                <option value="custom">Custom date range...</option>
               </select>
             </div>
             <button onclick="runLabAnalysis()" id="lab-run-btn"
               style="padding:11px 26px;background:linear-gradient(135deg,rgba(184,150,12,.2),rgba(212,175,55,.1));border:1px solid rgba(212,175,55,.5);border-radius:4px;font-family:'Share Tech Mono',monospace;font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold2);cursor:pointer;transition:all .2s;white-space:nowrap"
               onmouseover="this.style.background='rgba(212,175,55,.28)'" onmouseout="this.style.background='linear-gradient(135deg,rgba(184,150,12,.2),rgba(212,175,55,.1))'">▶ ANALYSE</button>
           </div>
+
+          <!-- Custom date picker (hidden by default) -->
+          <div id="custom-date-row" style="display:none;margin-bottom:14px;padding:14px;background:var(--steel2);border:1px solid var(--border);border-radius:4px">
+            <div style="font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Custom Date Range</div>
+            <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
+              <div style="flex:1;min-width:140px">
+                <div style="font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px">From</div>
+                <input type="date" id="date-from"
+                  style="width:100%;background:var(--steel);border:1px solid var(--border2);border-radius:4px;padding:9px 12px;font-family:'Share Tech Mono',monospace;font-size:.78rem;color:var(--bright);outline:none;cursor:pointer;color-scheme:dark;transition:border-color .2s"
+                  onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border2)'">
+              </div>
+              <div style="flex:1;min-width:140px">
+                <div style="font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px">To</div>
+                <input type="date" id="date-to"
+                  style="width:100%;background:var(--steel);border:1px solid var(--border2);border-radius:4px;padding:9px 12px;font-family:'Share Tech Mono',monospace;font-size:.78rem;color:var(--bright);outline:none;cursor:pointer;color-scheme:dark;transition:border-color .2s"
+                  onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border2)'">
+              </div>
+              <div style="font-size:.62rem;color:var(--muted);padding-bottom:2px;line-height:1.8">Supports up to<br>2 years of history.</div>
+            </div>
+          </div>
+
+          <!-- Investment calculator -->
+          <div style="border-top:1px solid var(--border);padding-top:14px;margin-bottom:14px">
+            <div style="font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">💰 Investment Calculator</div>
+            <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+              <div style="flex:1;min-width:160px">
+                <div style="font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px">If I had invested...</div>
+                <div style="display:flex;align-items:stretch">
+                  <span style="background:var(--steel);border:1px solid var(--border2);border-right:none;border-radius:4px 0 0 4px;padding:0 10px;font-size:.8rem;color:var(--muted);display:flex;align-items:center">£</span>
+                  <input type="number" id="calc-amount" value="1000" min="1" step="100"
+                    style="flex:1;background:var(--steel2);border:1px solid var(--border2);border-radius:0 4px 4px 0;padding:9px 12px;font-family:'Share Tech Mono',monospace;font-size:.82rem;color:var(--bright);outline:none;transition:border-color .2s;min-width:80px"
+                    onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border2)'"
+                    oninput="updateCalc()">
+                </div>
+              </div>
+              <div id="calc-result" style="flex:2;min-width:220px;padding:10px 14px;background:var(--steel);border:1px solid var(--border);border-radius:4px;font-size:.72rem;color:var(--muted);line-height:2">
+                Run an analysis above to see what your investment would have returned.
+              </div>
+            </div>
+          </div>
+
+          <!-- Preset scenarios -->
           <div style="border-top:1px solid var(--border);padding-top:14px">
-            <div style="font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Or replay a market moment</div>
+            <div style="font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Or replay a famous market moment</div>
             <div style="display:flex;gap:8px;flex-wrap:wrap">
               <button onclick="loadScenario('SPY','2008-09-01','2008-12-31','2008 Financial Crash')"
                 style="padding:7px 13px;background:rgba(224,85,69,.1);border:1px solid rgba(224,85,69,.3);border-radius:3px;font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:.06em;color:#e07a6e;cursor:pointer"
@@ -1246,6 +1291,44 @@ async function doLabUnlock(){
   }
 }
 
+/* ── CUSTOM DATE TOGGLE ── */
+function toggleCustomDates(val){
+  const row = document.getElementById('custom-date-row');
+  row.style.display = val === 'custom' ? 'block' : 'none';
+  if(val === 'custom'){
+    // Default: last 6 months
+    const today = new Date();
+    const sixMo  = new Date(); sixMo.setMonth(today.getMonth() - 6);
+    document.getElementById('date-to').value   = today.toISOString().slice(0,10);
+    document.getElementById('date-from').value = sixMo.toISOString().slice(0,10);
+  }
+}
+
+/* ── INVESTMENT CALCULATOR ── */
+let lastAnalysisReturn = null; // set after each analysis completes
+
+function updateCalc(){
+  const amount = parseFloat(document.getElementById('calc-amount').value) || 0;
+  const el     = document.getElementById('calc-result');
+  if(lastAnalysisReturn === null){
+    el.innerHTML = 'Run an analysis above to see what your investment would have returned.';
+    el.style.color = 'var(--muted)';
+    return;
+  }
+  const finalVal  = amount * (1 + lastAnalysisReturn / 100);
+  const profit    = finalVal - amount;
+  const isPos     = profit >= 0;
+  const fmtGBP    = n => '£' + Math.abs(n).toLocaleString('en-GB', {minimumFractionDigits:2, maximumFractionDigits:2});
+  el.innerHTML = `
+    <span style="color:var(--muted)">Invested:</span> <strong style="color:var(--bright)">${fmtGBP(amount)}</strong>
+    &nbsp;→&nbsp;
+    <span style="color:var(--muted)">Value:</span> <strong style="color:${isPos?'var(--safe)':'var(--danger)'}">${fmtGBP(finalVal)}</strong>
+    &nbsp;·&nbsp;
+    <span style="color:${isPos?'var(--safe)':'var(--danger)'}">${isPos?'▲ profit':' ▼ loss'}: ${isPos?'+':'−'}${fmtGBP(Math.abs(profit))}</span>
+    &nbsp;(${isPos?'+':''}${lastAnalysisReturn}%)
+  `;
+}
+
 function grantAccess(){
   sessionStorage.setItem('nv_access','1');
   document.getElementById('lab-gate').style.display='none';
@@ -1262,7 +1345,11 @@ let pt={cash:10000,shares:0,entry:0,idx:0,prices:[],dates:[],log:[]};
 /* ── MAIN ANALYSIS ── */
 async function runLabAnalysis(overrideTicker, overrideData, label){
   const ticker = overrideTicker || document.getElementById('lab-ticker').value.trim().toUpperCase() || 'AAPL';
-  const days   = parseInt(document.getElementById('lab-days').value)||90;
+  const daysSelect = document.getElementById('lab-days').value;
+  const isCustom   = daysSelect === 'custom';
+  const days       = isCustom ? 90 : (parseInt(daysSelect) || 90);
+  const dateFrom   = isCustom ? document.getElementById('date-from').value : null;
+  const dateTo     = isCustom ? document.getElementById('date-to').value   : null;
   document.getElementById('lab-results').style.display='none';
   document.getElementById('lab-loading').style.display='block';
   document.getElementById('lab-error-box').style.display='none';
@@ -1277,7 +1364,11 @@ async function runLabAnalysis(overrideTicker, overrideData, label){
           document.getElementById('lab-load-msg').textContent = attempt === 1
         ? `Fetching ${ticker} market data...`
         : `Data engine is waking up — please wait (${attempt}/3)...`;
-          const res = await fetch(`${BACKEND}/analyze?ticker=${encodeURIComponent(ticker)}&days=${days}`,{signal:AbortSignal.timeout(45000)});
+          let analyzeUrl = `${BACKEND}/analyze?ticker=${encodeURIComponent(ticker)}&days=${days}`;
+      if(isCustom && dateFrom && dateTo){
+        analyzeUrl += `&date_from=${dateFrom}&date_to=${dateTo}`;
+      }
+      const res = await fetch(analyzeUrl,{signal:AbortSignal.timeout(45000)});
           if(!res.ok){ const e=await res.json().catch(()=>({})); throw new Error(e.detail||'Server returned '+res.status); }
           d = await res.json();
           break; // success
@@ -1329,6 +1420,9 @@ async function runLabAnalysis(overrideTicker, overrideData, label){
     // Init paper trading
     pt={cash:10000,shares:0,entry:0,idx:0,prices:d.price_series.map(p=>p.price),dates:d.price_series.map(p=>p.date),log:[]};
     updatePT();
+    // Update investment calculator with latest return
+    lastAnalysisReturn = d.total_return;
+    updateCalc();
     document.getElementById('lab-loading').style.display='none';
     document.getElementById('lab-results').style.display='block';
   }catch(e){
