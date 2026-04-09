@@ -71,18 +71,18 @@ def analyze(ticker: str = "BTC-USD", days: int = 90):
     if days not in (30,60,90): days = 90
     periods = {30:"1mo", 60:"2mo", 90:"3mo"}
     try:
-        raw = yf.download(ticker, period=periods[days], interval="1d",
-                          auto_adjust=True, progress=False, group_by="column")
+        # yfinance 0.2.54+ uses a different download interface
+        ticker_obj = yf.Ticker(ticker)
+        raw = ticker_obj.history(period=periods[days], interval="1d", auto_adjust=True)
+        
         if raw is None or raw.empty:
-            raise HTTPException(404, f"No data for '{ticker}'. Try AAPL, BTC-USD, ETH-USD, SPY.")
-        # Flatten MultiIndex columns if present (yfinance 0.2.x behaviour)
-        if isinstance(raw.columns, pd.MultiIndex):
-            raw.columns = ['_'.join([c for c in col if c]).strip('_') for col in raw.columns]
-        # Find the Close column regardless of suffix
-        close_col = next((c for c in raw.columns if 'close' in c.lower()), None)
-        if close_col is None:
-            raise HTTPException(500, f"Could not find Close price column. Columns: {list(raw.columns)}")
-        df = raw[[close_col]].copy()
+            raise HTTPException(404, f"No data found for '{ticker}'. Check the symbol — e.g. AAPL, BTC-USD, ETH-USD, SPY.")
+        
+        # history() returns simple columns: Open, High, Low, Close, Volume
+        if "Close" not in raw.columns:
+            raise HTTPException(500, f"Unexpected columns: {list(raw.columns)}")
+        
+        df = raw[["Close"]].copy()
         df.columns = ["c"]
         df.dropna(inplace=True)
         df["r"] = df["c"].pct_change() * 100
