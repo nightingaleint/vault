@@ -56,9 +56,14 @@ Lost this email? Just reply and we will resend it.<br><br>
             timeout=10)
         print(f"[EMAIL] {r.status_code} → {to}")
 
+@app.get("/")
+def root():
+    return {"service":"Nightingale Probability Engine","status":"live","version":"1.3.0",
+            "endpoints":["/health","/analyze","/validate-code","/stripe-webhook","/success"]}
+
 @app.get("/health")
 def health():
-    return {"status":"live","version":"1.2.0","codes":len(CODES)}
+    return {"status":"live","version":"1.3.0","codes":len(CODES)}
 
 @app.get("/analyze")
 def analyze(ticker: str = "BTC-USD", days: int = 90):
@@ -67,12 +72,17 @@ def analyze(ticker: str = "BTC-USD", days: int = 90):
     periods = {30:"1mo", 60:"2mo", 90:"3mo"}
     try:
         raw = yf.download(ticker, period=periods[days], interval="1d",
-                          auto_adjust=True, progress=False)
-        if raw.empty:
+                          auto_adjust=True, progress=False, group_by="column")
+        if raw is None or raw.empty:
             raise HTTPException(404, f"No data for '{ticker}'. Try AAPL, BTC-USD, ETH-USD, SPY.")
+        # Flatten MultiIndex columns if present (yfinance 0.2.x behaviour)
         if isinstance(raw.columns, pd.MultiIndex):
-            raw.columns = raw.columns.get_level_values(0)
-        df = raw[["Close"]].copy()
+            raw.columns = ['_'.join([c for c in col if c]).strip('_') for col in raw.columns]
+        # Find the Close column regardless of suffix
+        close_col = next((c for c in raw.columns if 'close' in c.lower()), None)
+        if close_col is None:
+            raise HTTPException(500, f"Could not find Close price column. Columns: {list(raw.columns)}")
+        df = raw[[close_col]].copy()
         df.columns = ["c"]
         df.dropna(inplace=True)
         df["r"] = df["c"].pct_change() * 100
