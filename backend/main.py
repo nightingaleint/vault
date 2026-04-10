@@ -34,7 +34,7 @@ TWELVEDATA_KEY  = os.getenv("TWELVEDATA_API_KEY", "")
 STRIPE_SECRET   = os.getenv("STRIPE_WEBHOOK_SECRET", "")
 RESEND_KEY      = os.getenv("RESEND_API_KEY", "")
 FROM_EMAIL      = os.getenv("FROM_EMAIL", "vault@nightingalevault.com")
-SITE_URL        = os.getenv("SITE_URL", "https://nightingalevault.com")
+SITE_URL        = os.getenv("SITE_URL", "https://nightingalevault.pages.dev")
 
 # ── ACCESS CODES ──────────────────────────────────────────────────────────────
 CODES: dict = {
@@ -49,9 +49,18 @@ def make_code() -> str:
     return f"NV-{r[:4]}-{r[4:8]}-{r[8:12]}"
 
 def days_to_outputsize(days: int) -> int:
-    # Twelve Data returns N most recent data points
-    # Add buffer for weekends/holidays
-    return {30: 45, 60: 90, 90: 130}.get(days, 130)
+    # Add ~40% buffer over requested days to account for weekends and holidays
+    return {
+        30:   45,
+        60:   90,
+        90:   130,
+        120:  170,
+        240:  340,
+        365:  520,   # 1 year
+        1095: 1500,  # 3 years
+        1825: 2500,  # 5 years
+        3650: 5000,  # 10 years
+    }.get(days, max(int(days * 1.4), 45))
 
 async def fetch_twelvedata(ticker: str, days: int, outputsize: int = 0) -> list[dict]:
     """
@@ -137,7 +146,10 @@ Lost this email? Just reply and we will resend it.<br><br>
                   "subject": "Your Nightingale Vault Lifetime Access Code", "html": html},
             timeout=10,
         )
-        print(f"[EMAIL] {r.status_code} → {to}")
+        if r.status_code in (200, 201, 202):
+            print(f"[EMAIL OK] {r.status_code} → {to} | code: {code}")
+        else:
+            print(f"[EMAIL FAIL] {r.status_code} → {to} | response: {r.text}")
 
 
 # ── ROUTES ────────────────────────────────────────────────────────────────────
@@ -152,6 +164,22 @@ def root():
         "endpoints": ["/health", "/analyze", "/validate-code", "/stripe-webhook", "/success"],
     }
 
+@app.get("/test-email")
+async def test_email(to: str = ""):
+    """
+    Test endpoint — call this to verify Resend email is working.
+    Usage: https://vault-2u79.onrender.com/test-email?to=your@email.com
+    Remove this endpoint before going fully public.
+    """
+    if not to:
+        return {"error": "Add ?to=your@email.com to the URL"}
+    if not RESEND_KEY:
+        return {"error": "RESEND_API_KEY is not set in Render environment variables"}
+    test_code = "NV-TEST-1234-ABCD"
+    await send_email(to, test_code, "Test User")
+    return {"status": "sent", "to": to, "code": test_code,
+            "note": "Check your inbox — also check spam folder"}
+
 @app.get("/health")
 def health():
     return {
@@ -163,33 +191,16 @@ def health():
     }
 
 @app.get("/analyze")
-async def analyze(ticker: str = "AAPL", days: int = 90, date_from: str = "", date_to: str = ""):
+async def analyze(ticker: str = "AAPL", days: int = 90):
     ticker = ticker.upper().strip()
 
     # Twelve Data uses BTC/USD not BTC-USD for crypto
     # Support both formats
     ticker_td = ticker.replace("-", "/")
 
-    if days not in (30, 60, 90):
-        days = 90
 
     try:
-        outputsize = 500 if (date_from and date_to) else 0
-        prices = await fetch_twelvedata(ticker_td, days, outputsize)
-
-        # Filter by custom date range if provided
-        if date_from and date_to:
-            try:
-                from datetime import datetime as dt
-                df_start = dt.strptime(date_from, "%Y-%m-%d")
-                df_end   = dt.strptime(date_to,   "%Y-%m-%d")
-                # Re-parse dates for comparison (prices have "dd Mon 'yy" format)
-                def parse_price_date(d):
-                    try: return dt.strptime(d, "%d %b '%y")
-                    except: return None
-                prices = [p for p in prices if parse_price_date(p["date"]) and df_start <= parse_price_date(p["date"]) <= df_end]
-            except Exception:
-                pass  # if date parsing fails, use all data
+        prices = await fetch_twelvedata(ticker_td, days)
 
         if len(prices) < 5:
             raise HTTPException(404, f"Not enough data for '{ticker}'. Only {len(prices)} days returned.")
