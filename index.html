@@ -611,13 +611,18 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,8,16,.96);
                 onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border2)'"
                 oninput="this.value=this.value.toUpperCase()">
             </div>
-            <div style="flex:1;min-width:130px">
+            <div style="flex:1;min-width:140px">
               <div style="font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px">Time period</div>
-              <select id="lab-days" onchange="toggleCustomDates(this.value)" style="width:100%;background:var(--steel2);border:1px solid var(--border2);border-radius:4px;padding:11px 14px;font-family:'Share Tech Mono',monospace;font-size:.78rem;color:var(--bright);outline:none;cursor:pointer">
+              <select id="lab-days" style="width:100%;background:var(--steel2);border:1px solid var(--border2);border-radius:4px;padding:11px 14px;font-family:'Share Tech Mono',monospace;font-size:.78rem;color:var(--bright);outline:none;cursor:pointer">
                 <option value="30">Last 30 days</option>
                 <option value="60">Last 60 days</option>
                 <option value="90" selected>Last 90 days</option>
-                <option value="custom">Custom date range...</option>
+                <option value="120">Last 120 days</option>
+                <option value="240">Last 240 days</option>
+                <option value="365">1 Year</option>
+                <option value="1095">3 Years</option>
+                <option value="1825">5 Years</option>
+                <option value="3650">10 Years</option>
               </select>
             </div>
             <button onclick="runLabAnalysis()" id="lab-run-btn"
@@ -625,25 +630,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,8,16,.96);
               onmouseover="this.style.background='rgba(212,175,55,.28)'" onmouseout="this.style.background='linear-gradient(135deg,rgba(184,150,12,.2),rgba(212,175,55,.1))'">▶ ANALYSE</button>
           </div>
 
-          <!-- Custom date picker (hidden by default) -->
-          <div id="custom-date-row" style="display:none;margin-bottom:14px;padding:14px;background:var(--steel2);border:1px solid var(--border);border-radius:4px">
-            <div style="font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Custom Date Range</div>
-            <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
-              <div style="flex:1;min-width:140px">
-                <div style="font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px">From</div>
-                <input type="date" id="date-from"
-                  style="width:100%;background:var(--steel);border:1px solid var(--border2);border-radius:4px;padding:9px 12px;font-family:'Share Tech Mono',monospace;font-size:.78rem;color:var(--bright);outline:none;cursor:pointer;color-scheme:dark;transition:border-color .2s"
-                  onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border2)'">
-              </div>
-              <div style="flex:1;min-width:140px">
-                <div style="font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px">To</div>
-                <input type="date" id="date-to"
-                  style="width:100%;background:var(--steel);border:1px solid var(--border2);border-radius:4px;padding:9px 12px;font-family:'Share Tech Mono',monospace;font-size:.78rem;color:var(--bright);outline:none;cursor:pointer;color-scheme:dark;transition:border-color .2s"
-                  onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border2)'">
-              </div>
-              <div style="font-size:.62rem;color:var(--muted);padding-bottom:2px;line-height:1.8">Supports up to<br>2 years of history.</div>
-            </div>
-          </div>
 
           <!-- Investment calculator -->
           <div style="border-top:1px solid var(--border);padding-top:14px;margin-bottom:14px">
@@ -1291,19 +1277,6 @@ async function doLabUnlock(){
   }
 }
 
-/* ── CUSTOM DATE TOGGLE ── */
-function toggleCustomDates(val){
-  const row = document.getElementById('custom-date-row');
-  row.style.display = val === 'custom' ? 'block' : 'none';
-  if(val === 'custom'){
-    // Default: last 6 months
-    const today = new Date();
-    const sixMo  = new Date(); sixMo.setMonth(today.getMonth() - 6);
-    document.getElementById('date-to').value   = today.toISOString().slice(0,10);
-    document.getElementById('date-from').value = sixMo.toISOString().slice(0,10);
-  }
-}
-
 /* ── INVESTMENT CALCULATOR ── */
 let lastAnalysisReturn = null; // set after each analysis completes
 
@@ -1345,11 +1318,7 @@ let pt={cash:10000,shares:0,entry:0,idx:0,prices:[],dates:[],log:[]};
 /* ── MAIN ANALYSIS ── */
 async function runLabAnalysis(overrideTicker, overrideData, label){
   const ticker = overrideTicker || document.getElementById('lab-ticker').value.trim().toUpperCase() || 'AAPL';
-  const daysSelect = document.getElementById('lab-days').value;
-  const isCustom   = daysSelect === 'custom';
-  const days       = isCustom ? 90 : (parseInt(daysSelect) || 90);
-  const dateFrom   = isCustom ? document.getElementById('date-from').value : null;
-  const dateTo     = isCustom ? document.getElementById('date-to').value   : null;
+  const days = parseInt(document.getElementById('lab-days').value) || 90;
   document.getElementById('lab-results').style.display='none';
   document.getElementById('lab-loading').style.display='block';
   document.getElementById('lab-error-box').style.display='none';
@@ -1364,11 +1333,7 @@ async function runLabAnalysis(overrideTicker, overrideData, label){
           document.getElementById('lab-load-msg').textContent = attempt === 1
         ? `Fetching ${ticker} market data...`
         : `Data engine is waking up — please wait (${attempt}/3)...`;
-          let analyzeUrl = `${BACKEND}/analyze?ticker=${encodeURIComponent(ticker)}&days=${days}`;
-      if(isCustom && dateFrom && dateTo){
-        analyzeUrl += `&date_from=${dateFrom}&date_to=${dateTo}`;
-      }
-      const res = await fetch(analyzeUrl,{signal:AbortSignal.timeout(45000)});
+          const res = await fetch(`${BACKEND}/analyze?ticker=${encodeURIComponent(ticker)}&days=${days}`,{signal:AbortSignal.timeout(45000)});
           if(!res.ok){ const e=await res.json().catch(()=>({})); throw new Error(e.detail||'Server returned '+res.status); }
           d = await res.json();
           break; // success
