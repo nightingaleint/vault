@@ -53,7 +53,7 @@ def days_to_outputsize(days: int) -> int:
     # Add buffer for weekends/holidays
     return {30: 45, 60: 90, 90: 130}.get(days, 130)
 
-async def fetch_twelvedata(ticker: str, days: int) -> list[dict]:
+async def fetch_twelvedata(ticker: str, days: int, outputsize: int = 0) -> list[dict]:
     """
     Fetch daily OHLCV from Twelve Data.
     Returns list of {date, close} dicts sorted oldest → newest.
@@ -61,8 +61,8 @@ async def fetch_twelvedata(ticker: str, days: int) -> list[dict]:
     if not TWELVEDATA_KEY:
         raise HTTPException(500, "TWELVEDATA_API_KEY not set on server. Add it in Render environment variables.")
 
-    # If custom date range, fetch up to 2 years of data so we can filter
-    outputsize = 500 if date_from and date_to else days_to_outputsize(days)
+    if outputsize == 0:
+        outputsize = days_to_outputsize(days)
     url = "https://api.twelvedata.com/time_series"
     params = {
         "symbol":     ticker,
@@ -174,7 +174,8 @@ async def analyze(ticker: str = "AAPL", days: int = 90, date_from: str = "", dat
         days = 90
 
     try:
-        prices = await fetch_twelvedata(ticker_td, days)
+        outputsize = 500 if (date_from and date_to) else 0
+        prices = await fetch_twelvedata(ticker_td, days, outputsize)
 
         # Filter by custom date range if provided
         if date_from and date_to:
